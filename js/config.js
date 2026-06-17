@@ -18,8 +18,8 @@ const CONFIG = {
      Names, author, and the public URL. The visible title bar, the browser
      tab title, and the citation/KML exports all read from here. */
   site: {
-    title:     "MIRL Map",                         // EDIT ME — shown in the header and tab
-    subtitle:  "A documentary photo-map",          // EDIT ME — small line under the title
+    title:     "The Managed Edge",                         // EDIT ME — shown in the header and tab
+    subtitle:  "A walk where UC Santa Barbara meets the Pacific",          // EDIT ME — small line under the title
     titleAlt:  "",                                 // optional second-script title (e.g. Arabic); "" hides it
 
     storagePrefix: "mirlmap",                       // localStorage key prefix (a11y + language). Keep it short and unique.
