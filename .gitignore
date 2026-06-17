@@ -1,0 +1,13 @@
+# Local high-res source set (the originals you run color_correct.py against).
+# Keep your full-res originals here; only the generated photos/, photos/web/,
+# photos/thumb/ tiers are committed and deployed.
+photos_backup/
+
+# OS / editor cruft
+.DS_Store
+*.pyc
+__pycache__/
+.venv/
+
+# Local editor / tool state
+.claude/

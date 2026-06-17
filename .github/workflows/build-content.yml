@@ -1,0 +1,50 @@
+# Compiles the editable content (content/photos/*.md, written by the /admin CMS
+# or by hand) into what the static engine loads: js/data/photos.js, the
+# narratives, and the web/thumb image tiers. Runs scripts/build_content.py and
+# commits the regenerated files back to main; the Pages deploy then publishes.
+#
+# Loop-safe: this triggers ONLY on the source paths (content/photos/** and new
+# top-level photos/* originals). Its own commit touches only the GENERATED paths
+# (js/data/photos.js, narratives/**, photos/web/**, photos/thumb/**), which do
+# not match the triggers, so it never re-runs itself. (The Pages workflow does
+# redeploy once — that is the intended outcome.)
+name: Build content
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'content/photos/**'
+      - 'photos/*'          # new full-res originals only (not photos/web|thumb tiers)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-content
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: pip install Pillow PyYAML
+      - name: Compile content -> photos.js + narratives + tiers
+        run: python3 scripts/build_content.py
+      - name: Commit regenerated files
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add js/data/photos.js narratives photos/web photos/thumb
+          if git diff --cached --quiet; then
+            echo "No generated changes."
+          else
+            git commit -m "Build content (auto): regenerate photos.js, narratives, and image tiers"
+            git push
+          fi

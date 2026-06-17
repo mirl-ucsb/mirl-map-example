@@ -1,0 +1,49 @@
+# ============================================================================
+# mirl-map content admin — Decap CMS configuration
+# ----------------------------------------------------------------------------
+# This powers the /admin editor. Editors log in with GitHub and add/edit
+# photographs, captions, and narratives; their changes are committed to the
+# repo, and a GitHub Action (.github/workflows/build-content.yml) regenerates
+# js/data/photos.js, the narratives, and the web/thumb tiers.
+#
+# The "Log in with GitHub" sign-in is handled by MIRL's shared login helper
+# (the base_url below is already set), so you register no OAuth app of your own.
+# To publish your own map you only set `repo` to your repository. See ADMIN-SETUP.md.
+# ============================================================================
+
+backend:
+  name: github
+  repo: YOUR-USER/mirl-map                               # EDIT ME — your GitHub "owner/repo"
+  branch: main
+  base_url: https://mirl-map-auth.mirl-ucsb.workers.dev  # MIRL's shared login helper (leave as-is)
+
+# Test the CMS locally with no login:  run `npx decap-server` then open
+# http://localhost:8766/admin/  — Decap will read/write your local files.
+local_backend: true
+
+# Uploaded photographs are committed here (full resolution); the Action makes
+# the web/thumb tiers afterward.
+media_folder: "photos"
+public_folder: "/photos"
+
+collections:
+  - name: "photographs"
+    label: "Photographs"
+    label_singular: "Photograph"
+    description: "Add each photograph with a caption, and a short story if you like. Every time you save, your map rebuilds and republishes on its own, and the new photo appears on it within a minute or two. A photo's location and camera direction are read from its GPS automatically."
+    folder: "content/photos"
+    create: true
+    identifier_field: "caption"
+    slug: "{{fields.image}}"
+    format: "yaml-frontmatter"
+    summary: "{{caption}}"
+    fields:
+      - { name: "image",    label: "Photograph", widget: "image" }
+      - { name: "caption",  label: "Caption",    widget: "string", hint: "One or two sentences shown under the photo." }
+      - { name: "body",     label: "Narrative",  widget: "markdown", required: false, hint: "Optional. Cite sources with tokens like [SAMP]." }
+      - { name: "lat",      label: "Latitude",  widget: "number", required: false, value_type: "float", step: 0.000001, hint: "Auto-filled from the photo's GPS if blank." }
+      - { name: "lon",      label: "Longitude", widget: "number", required: false, value_type: "float", step: 0.000001, hint: "Auto-filled from the photo's GPS if blank." }
+      - { name: "bearing",  label: "Camera bearing",  widget: "number", required: false, value_type: "float", hint: "Auto-filled from EXIF. Degrees clockwise from north; draws the sightline cone." }
+      - { name: "fov",      label: "Field of view",   widget: "number", required: false, value_type: "float", hint: "Auto-filled from EXIF (degrees)." }
+      - { name: "taken_at", label: "Taken at",        widget: "string", required: false, hint: "Auto-filled from EXIF, e.g. 2026:05:01 14:10:00." }
+      - { name: "sources",  label: "Source tokens", widget: "list", required: false, hint: "Optional citation keys from js/data/sources.js, e.g. SAMP." }

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIRL Map — Photo Essay</title>
+
+<!-- SEO / social. EDIT ME: update these (and js/config.js) when you fork. -->
+<meta name="description" content="A documentary photo essay: geolocated photographs paired with per-photo narratives.">
+<meta name="author" content="Jeff O'Brien">
+<link rel="canonical" href="https://YOUR-USER.github.io/mirl-map/gallery.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="MIRL Map">
+<meta property="og:title" content="MIRL Map — Photo Essay">
+<meta property="og:description" content="A documentary photo essay: geolocated photographs paired with per-photo narratives.">
+<meta property="og:url" content="https://YOUR-USER.github.io/mirl-map/gallery.html">
+<meta property="og:image" content="https://YOUR-USER.github.io/mirl-map/photos/web/sample-1.jpeg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://YOUR-USER.github.io/mirl-map/photos/web/sample-1.jpeg">
+
+<meta name="theme-color" content="#1b2733">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='10' fill='%231b2733'/><circle cx='32' cy='27' r='9' fill='%23e9edf1'/><circle cx='32' cy='27' r='3.4' fill='%230f766e'/><path d='M32 36 L24 50 L40 50 Z' fill='%23e9edf1'/></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Amiri:wght@400;700&display=swap"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<link rel="stylesheet" href="css/style.css?v=7"/>
+<link rel="stylesheet" href="css/gallery.css?v=7"/>
+<link rel="stylesheet" href="css/a11y.css?v=7"/>
+
+<script src="js/config.js?v=7"></script>
+<script>
+  /* Apply saved language/direction before paint (see index.html). */
+  try {
+    var _sp  = (window.CONFIG && CONFIG.site && CONFIG.site.storagePrefix) || 'mirlmap';
+    var _sec = (window.CONFIG && CONFIG.languages && CONFIG.languages.second) || null;
+    var _l   = localStorage.getItem(_sp + '-lang');
+    if (_sec && _l === _sec.code) {
+      document.documentElement.setAttribute('lang', _l);
+      document.documentElement.setAttribute('dir', _sec.rtl ? 'rtl' : 'ltr');
+    }
+  } catch (e) {}
+</script>
+</head>
+<body>
+
+<div id="header">
+  <div class="header-left">
+    <h1><span data-site-title>MIRL Map</span></h1>
+    <span class="sub" data-i18n="g.sub">Photographs</span>
+  </div>
+  <div id="header-controls">
+    <!-- Language toggle generated from CONFIG.languages (hidden when no second language) -->
+    <div class="layer-group" id="lang-btns" data-lang-toggle></div>
+    <div class="h-div" data-lang-toggle></div>
+    <button id="btn-a11y" onclick="toggleA11y()" aria-label="Accessibility options" aria-expanded="false" aria-controls="a11y-panel">Aa</button>
+    <div class="h-div"></div>
+    <a href="index.html" class="layer-btn nav-back" style="text-decoration:none;" data-i18n="nav.map">&#8592; Map</a>
+  </div>
+</div>
+
+<div id="a11y-panel" role="dialog" aria-label="Accessibility options" aria-modal="false">
+  <h3 data-i18n="a11y.title">Accessibility</h3>
+  <div class="a11y-section">
+    <span class="a11y-label" id="fs-label" data-i18n="a11y.textsize">Text size</span>
+    <div class="fs-btns" role="group" aria-labelledby="fs-label">
+      <button class="fs-btn" id="fs-btn-small"  onclick="setFontSize('small')"  aria-pressed="false">A</button>
+      <button class="fs-btn" id="fs-btn-normal" onclick="setFontSize('normal')" aria-pressed="true">A</button>
+      <button class="fs-btn" id="fs-btn-large"  onclick="setFontSize('large')"  aria-pressed="false">A</button>
+      <button class="fs-btn" id="fs-btn-xlarge" onclick="setFontSize('xlarge')" aria-pressed="false">A</button>
+    </div>
+  </div>
+  <div class="a11y-section">
+    <div class="a11y-toggle-row" onclick="toggleHighContrast()" role="button" tabindex="0"
+         aria-pressed="false" aria-label="Toggle high contrast"
+         onkeydown="if(event.key==='Enter'||event.key===' '){toggleHighContrast();event.preventDefault();}">
+      <span class="a11y-toggle-lbl" data-i18n="a11y.hc">High contrast</span>
+      <div class="a11y-toggle" id="toggle-hc" aria-hidden="true"></div>
+    </div>
+  </div>
+  <div class="a11y-section">
+    <div class="a11y-toggle-row" onclick="toggleReduceMotion()" role="button" tabindex="0"
+         aria-pressed="false" aria-label="Toggle reduce motion"
+         onkeydown="if(event.key==='Enter'||event.key===' '){toggleReduceMotion();event.preventDefault();}">
+      <span class="a11y-toggle-lbl" data-i18n="a11y.rm">Reduce motion</span>
+      <div class="a11y-toggle" id="toggle-rm" aria-hidden="true"></div>
+    </div>
+  </div>
+  <p class="a11y-hint" data-i18n="a11y.hint">Settings are saved and persist across pages.</p>
+</div>
+
+<main id="gallery">
+  <div id="gallery-intro">
+    <h2 data-i18n="g.intro.h2"><span data-site-title>MIRL Map</span></h2>
+    <p data-i18n="g.intro.p">
+      The same photographs as the map, read top to bottom: a short walk along the
+      edge where UC Santa Barbara meets the Pacific, and the small signs of an
+      institution managing its own coastline. A mini-map at the side follows the
+      photograph you are reading.
+    </p>
+  </div>
+  <div id="gallery-grid"></div>
+  <footer id="gallery-footer" data-i18n="intro.credit">Photographs and text by Jeff O'Brien, Material / Image Research Lab, UC Santa Barbara.</footer>
+</main>
+
+<aside id="scrolly" aria-hidden="true" aria-label="Where the photograph you are reading was taken">
+  <div id="scrolly-voice" class="sv-hidden"></div>
+  <div id="scrolly-map"></div>
+  <div id="scrolly-cap">
+    <span id="scrolly-cap-txt"></span>
+    <a id="scrolly-open" href="index.html" data-i18n="g.onmap">on the map &#8599;</a>
+  </div>
+</aside>
+
+<div id="lb" role="dialog" aria-label="Photo lightbox" aria-modal="true">
+  <button id="lb-close" onclick="closeLb()" aria-label="Close lightbox">&#x2715;</button>
+  <img id="lb-img" src="" alt="">
+  <div id="lb-caption"></div>
+  <div id="lb-nav">
+    <button class="nav-btn" onclick="stepLb(-1)" aria-label="Previous photo">&#8592;</button>
+    <button class="nav-btn" onclick="stepLb(1)" aria-label="Next photo">&#8594;</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="js/data/photos.js?v=7"></script>
+<script src="js/data/sources.js?v=7"></script>
+<script src="js/data/testimonies.js?v=7"></script>
+<script src="js/data/i18n.js?v=7"></script>
+<script src="js/a11y.js?v=7"></script>
+<script src="js/i18n.js?v=7"></script>
+<script src="js/narratives.js?v=7"></script>
+<script src="js/gallery.js?v=7"></script>
+</body>
+</html>

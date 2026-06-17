@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+doi: 10.5281/zenodo.20651093
+title: "mirl-map: A reusable documentary photo-map platform"
+message: "If you use this software, please cite it as below. EDIT ME: update the URLs (and your name) when you fork."
+type: software
+license: MIT
+authors:
+  - family-names: "O'Brien"
+    given-names: "Jeff"
+    email: "jeffobrien@ucsb.edu"
+    affiliation: "Material / Image Research Lab (MIRL), University of California, Santa Barbara"
+repository-code: "https://github.com/mirl-ucsb/mirl-map"
+url: "https://mirl-ucsb.github.io/mirl-map/"
+abstract: >-
+  A no-build static platform that pairs geolocated photographs with per-photo
+  written narratives, presented as an interactive Leaflet map and a sequential
+  photo essay. Generalized from the "Lifta" project. Accessible, bilingual-capable,
+  and deployable on any static host.
+keywords:
+  - "documentary"
+  - "photo map"
+  - "digital humanities"
+  - "archives"
+  - "Leaflet"
+  - "GitHub Pages"
+version: "1.0.0"
+date-released: "2026-06-03"

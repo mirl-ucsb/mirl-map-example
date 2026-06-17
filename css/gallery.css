@@ -1,0 +1,284 @@
+/* Gallery page: Cartography theme, larger narrative text */
+
+body { background: #e9edf1; }
+
+#gallery {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+#gallery-intro {
+  border-bottom: 1px solid #c7d0d9;
+  margin-bottom: 56px;
+  padding-bottom: 32px;
+}
+
+#gallery-intro h2 {
+  font-size: 1.3rem;
+  font-weight: normal;
+  color: #1b2733;
+  letter-spacing: .06em;
+  margin-bottom: 14px;
+}
+
+#gallery-intro p {
+  font-size: .98rem;
+  color: #2c3a49;
+  line-height: 1.78;
+  max-width: 640px;
+}
+
+/* Each photo entry */
+.g-entry {
+  margin-bottom: 72px;
+  padding-bottom: 72px;
+  border-bottom: 1px solid #c7d0d9;
+  scroll-margin-top: 70px;            /* keep entry below the sticky header on scroll-into-view */
+  transition: box-shadow .35s ease, background-color .35s ease;
+  border-radius: 4px;
+}
+.g-entry:last-child { border-bottom: none; }
+
+/* Brief highlight when arrived via ?photo= permalink */
+.g-entry.g-highlight {
+  background-color: #f5f7f9;
+  box-shadow: 0 0 0 6px rgba(15,118,110,.18);
+}
+
+.g-photo-wrap {
+  position: relative;
+  cursor: zoom-in;
+  margin-bottom: 0;
+  background: #cdd7df;
+}
+
+.g-photo-wrap img {
+  width: 100%;
+  display: block;
+  border-radius: 3px 3px 0 0;
+}
+
+.g-photo-num {
+  position: absolute;
+  bottom: 10px;
+  right: 12px;
+  font-size: .7rem;
+  font-family: var(--font-mono);
+  color: rgba(255,255,255,.85);
+  background: rgba(0,0,0,.5);
+  padding: 2px 7px;
+  border-radius: 2px;
+  letter-spacing: .04em;
+}
+
+.g-caption {
+  font-size: 1.02rem;
+  color: #1b2733;
+  font-style: italic;
+  line-height: 1.65;
+  padding: 14px 18px 13px;
+  border-left: 3px solid #0f766e;
+  background: #f5f7f9;
+  border-radius: 0 0 3px 3px;
+  margin-bottom: 22px;
+}
+
+.g-coords {
+  font-size: .72rem;
+  font-family: var(--font-mono);
+  color: #5e6f82;
+  letter-spacing: .03em;
+  margin-bottom: 22px;
+}
+
+.g-context {
+  font-size: 1.08rem;
+  color: #1b2733;
+  line-height: 1.85;
+}
+.g-context p { margin-bottom: 1.1em; }
+.g-context p:last-child { margin-bottom: 0; }
+
+.g-sources {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid #c7d0d9;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+}
+
+.g-source-label {
+  font-size: .68rem;
+  color: #5e6f82;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.g-source-link {
+  font-size: .8rem;
+  color: #0f766e;
+  text-decoration: none;
+  line-height: 1.5;
+}
+.g-source-link:hover { color: #0c5d56; text-decoration: underline; }
+.g-source-plain {
+  font-size: .8rem;
+  color: #46566a;
+  line-height: 1.5;
+}
+
+/* Copyright footer */
+#gallery-footer {
+  margin-top: 56px;
+  padding-top: 24px;
+  border-top: 1px solid #c7d0d9;
+  font-size: .78rem;
+  color: #46566a;
+  text-align: center;
+  letter-spacing: .03em;
+}
+
+/* Back link in header */
+.nav-back {
+  text-decoration: none;
+  display: inline-block;
+  letter-spacing: .04em;
+}
+
+/* Lightbox: dark backdrop kept for photo viewing */
+#lb {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.96);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+}
+#lb.open { display: flex; }
+#lb-img {
+  max-width: 92vw;
+  max-height: 85vh;
+  border-radius: 3px;
+  object-fit: contain;
+}
+#lb-caption {
+  font-size: .9rem;
+  color: #eef3f7;
+  max-width: 720px;
+  text-align: center;
+  line-height: 1.6;
+  padding: 0 20px;
+  font-style: italic;
+}
+#lb-close {
+  position: fixed;
+  top: 16px;
+  right: 22px;
+  font-size: 1.7rem;
+  color: #eef3f7;
+  cursor: pointer;
+  background: none;
+  border: none;
+  opacity: .8;
+}
+#lb-close:hover { opacity: 1; }
+#lb-nav {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 12px;
+  pointer-events: none;
+}
+#lb-nav .nav-btn { pointer-events: all; }
+
+/* ── Scrollytelling mini-map (binds the essay to the map) ──────────
+   A small fixed panel that follows the photograph you are reading:
+   it flies to the standpoint, draws the view cone, and surfaces a
+   Lifta Voice when one is anchored nearby. Hidden on narrow screens
+   to keep the reading column clean. */
+#scrolly{
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  width: 264px;
+  z-index: 1200;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .45s ease, transform .45s ease;
+  pointer-events: none;
+}
+#scrolly.on{ opacity: 1; transform: none; pointer-events: auto; }
+#scrolly-map{
+  width: 264px;
+  height: 182px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #c7d0d9;
+  box-shadow: 0 4px 18px rgba(20,28,38,.28);
+  background: #cdd7df;
+}
+#scrolly-cap{
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--font-mono, monospace);
+  font-size: .66rem;
+  color: #46566a;
+  padding: 5px 3px 0;
+}
+#scrolly-open{ color: #0f766e; text-decoration: none; border-bottom: 1px dotted #9aa9b8; }
+#scrolly-open:hover{ color: #0c5d56; border-bottom-color: #0f766e; }
+#scrolly-voice{
+  background: #f5f7f9;
+  border: 1px solid #c7d0d9;
+  border-left: 3px solid #d97706;
+  border-radius: 5px;
+  padding: 11px 13px;
+  margin-bottom: 9px;
+  box-shadow: 0 4px 14px rgba(20,28,38,.18);
+}
+#scrolly-voice.sv-hidden{ display: none; }
+#scrolly-voice .sv-mark{
+  font-family: var(--font-mono, monospace);
+  font-size: .57rem;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: #b45309;
+  margin-bottom: 6px;
+}
+#scrolly-voice blockquote{
+  margin: 0 0 7px;
+  font-family: var(--font-body, Georgia, serif);
+  font-style: italic;
+  font-size: .85rem;
+  line-height: 1.5;
+  color: #1b2733;
+}
+#scrolly-voice .sv-who{ font-size: .72rem; color: #2c3a49; line-height: 1.4; }
+#scrolly-voice .sv-who span{ color: #5e6f82; }
+#scrolly-voice .sv-src{
+  display: inline-block;
+  margin-top: 5px;
+  font-size: .63rem;
+  color: #0f766e;
+  text-decoration: none;
+  border-bottom: 1px dotted #9aa9b8;
+}
+#scrolly-voice .sv-src:hover{ color: #0c5d56; }
+/* Show the panel only where there is room beside the essay, and shift
+   the reading column right so the panel never overlaps the text. */
+@media (max-width: 1079px){ #scrolly{ display: none; } }
+@media (min-width: 1080px){ #gallery{ margin-left: 312px; margin-right: auto; } }
+html.hc #scrolly-voice{ background: #fff; border-color: #1a3038; border-left-color: #1a3038; }
+html.hc #scrolly-voice blockquote{ color: #000; }
+html.hc #scrolly-voice .sv-who{ color: #11181f; }
