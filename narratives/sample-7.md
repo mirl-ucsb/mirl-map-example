@@ -1,3 +1,1 @@
-Every campus announces itself. Here the announcement is a low sandstone wall and a single concrete arc, lifted just high enough to frame the road and the lawn behind it. It is the first thing a visitor passes and the last thing a commuter sees leaving, and most people register it without ever looking.
-
-The monument marks a boundary as much as an entrance. Behind it the institution orders everything within reach: the mown verge, the labeled hedge, the white line down the road. Everything in these photographs is measured against this threshold. A few hundred meters past it, the ordering thins, and the coast begins keeping its own counsel.
+A low sandstone wall and a single concrete arc lift just high enough to frame the road and the lawn behind it, the first thing a visitor passes and the last a commuter sees leaving. The monument marks a boundary as much as an entrance: a few hundred meters past it the ordering thins, and the coast begins keeping its own counsel.

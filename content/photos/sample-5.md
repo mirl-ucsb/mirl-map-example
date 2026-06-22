@@ -8,6 +8,4 @@
 'taken_at': '2024:08:21 08:51:26'
 ---
 
-From a distance it reads as a building. Up close it is a shipping container, set on a patch of graded sand above the break, the kind of object that arrives for a season and is forgotten into permanence. A concrete bench faces the water beside it.
-
-This is the working coast, not the postcard one. The container holds whatever the beach needs stored, and it sits exactly where you would stand to watch the waves. Use and view share the same narrow shelf of land, and neither quite gives way.
+From a distance it reads as a building; up close it is a shipping container set on graded sand above the break, a concrete bench facing the water beside it. This is the working coast, not the postcard one, where use and view share the same narrow shelf of land and neither quite gives way.
