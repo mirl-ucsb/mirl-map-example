@@ -151,6 +151,23 @@ created for you from these, so there is no need to touch it by hand.
 (If a map has not turned on the web editor, the photographs live directly in
 `js/data/photos.js` instead, as one list you edit. The idea is the same.)
 
+### Adding many photographs at once
+
+One at a time is fine for a few; for a batch there is a shortcut. Upload the
+photographs together in the editor's **Media** library (it lets you select or drag
+in many files at once), then run the **Import photos** action: open your
+repository's **Actions** tab, choose **Import photos** on the left, and press **Run
+workflow**. A pin is created for each newly uploaded image, placed where it was
+taken from its GPS, and the map republishes. You then write the captions. Your
+dashboard has an "import the batch" link that goes straight there.
+
+Working on your own computer instead? `python3 scripts/import_photos.py` does the
+same for the photographs already in `photos/`, and `python3 scripts/import_photos.py
+~/some-folder/` pulls a folder of images in.
+
+Photographs without GPS are still imported, but you add their location in the
+editor, or they stay off the map. Deleting a pin later never brings it back.
+
 ### Your sources: `js/data/sources.js`
 
 A short list pairing each code with its full reference:

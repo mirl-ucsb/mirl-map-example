@@ -3,46 +3,49 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MIRL Map</title>
+<title>A Documentary Map</title>
 
-<!-- SEO / social. EDIT ME: update these (and js/config.js) when you fork. -->
+<!-- SEO / social. The title and description follow your Map details; a social-preview
+     image is written between the OG markers below when you set a cover in Map details. -->
 <meta name="description" content="A documentary photo-map: geolocated photographs paired with per-photo narratives.">
-<meta name="author" content="Jeff O'Brien">
-<meta name="keywords" content="documentary, photo map, MIRL, archive, fieldwork">
+<meta name="author" content="">
+<meta name="keywords" content="documentary, photo map, photographs, archive">
 <link rel="canonical" href="https://YOUR-USER.github.io/mirl-map/">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="MIRL Map">
-<meta property="og:title" content="MIRL Map">
+<meta property="og:site_name" content="A Documentary Map">
+<meta property="og:title" content="A Documentary Map">
 <meta property="og:description" content="A documentary photo-map: geolocated photographs paired with per-photo narratives.">
 <meta property="og:url" content="https://YOUR-USER.github.io/mirl-map/">
-<meta property="og:image" content="https://YOUR-USER.github.io/mirl-map/photos/web/sample-1.jpeg">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="MIRL Map">
+<!-- MIRL:OG-START --><!-- MIRL:OG-END -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="A Documentary Map">
 <meta name="twitter:description" content="A documentary photo-map: geolocated photographs paired with per-photo narratives.">
-<meta name="twitter:image" content="https://YOUR-USER.github.io/mirl-map/photos/web/sample-1.jpeg">
 
-<!-- Favicon: a neutral map-pin mark (data URL, no file needed). -->
-<meta name="theme-color" content="#1b2733">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='10' fill='%231b2733'/><circle cx='32' cy='27' r='9' fill='%23e9edf1'/><circle cx='32' cy='27' r='3.4' fill='%230f766e'/><path d='M32 36 L24 50 L40 50 Z' fill='%23e9edf1'/></svg>">
+<!-- Favicon: the MIRL bleed in the map's teal, with a location mark. Fonts are
+     vendored in fonts/ and declared in css/style.css; nothing loads from a font service. -->
+<meta name="theme-color" content="#fefaf0">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Amiri:wght@400;700&display=swap"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet-minimap@3.6.1/dist/Control.MiniMap.min.css"/>
-<link rel="stylesheet" href="css/style.css?v=7"/>
-<link rel="stylesheet" href="css/a11y.css?v=7"/>
+<link rel="stylesheet" href="css/style.css?v=14"/>
+<link rel="stylesheet" href="css/a11y.css?v=14"/>
 
 <!-- CONFIG loads FIRST so every other script (and the inline script below) can read it. -->
-<script src="js/config.js?v=7"></script>
+<script src="js/config.js?v=14"></script>
+<script src="js/data/settings.js?v=14"></script>
 <script>
-  /* Skip the intro overlay when arriving via permalink (?photo=…) so shared
-     links go straight to the photo. Done in <head> to avoid a flash. */
-  if (new URLSearchParams(location.search).get('photo')) {
-    document.documentElement.classList.add('intro-skip');
-  }
+  /* Skip the intro overlay when arriving via a photo permalink (?photo=…) or in
+     preview mode (?preview, used by the dashboard's live preview) so the map shows
+     at once instead of the splash. Done in <head> to avoid a flash. */
+  (function () {
+    var q = new URLSearchParams(location.search);
+    if (q.get('photo') || q.has('preview')) {
+      document.documentElement.classList.add('intro-skip');
+    }
+  })();
   /* Apply the saved interface language/direction before paint, so a visitor in
      a right-to-left second language never sees a left-to-right flash. */
   try {
@@ -58,26 +61,23 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.min.js"></script>
-<script src="js/lib/leaflet-side-by-side.js?v=7"></script>
+<script src="js/lib/leaflet-side-by-side.js?v=14"></script>
 <script src="https://unpkg.com/leaflet-minimap@3.6.1/dist/Control.MiniMap.min.js"></script>
 </head>
-<body>
+<body class="page-map">
 
 <!-- ─── Intro splash (CONFIG.features.intro). EDIT ME: your project's opening. ─── -->
 <div id="intro-screen" data-feature="intro" role="dialog" aria-label="About this project" aria-modal="true">
   <div class="intro-card">
     <div class="intro-header">
       <div class="intro-title-ar" data-site-title-alt></div>
-      <h1 class="intro-title-en" data-i18n="intro.title">MIRL Map</h1>
-      <div class="intro-subtitle" data-i18n="intro.subtitle">A documentary photo-map</div>
+      <h1 class="intro-title-en" data-i18n="intro.title" data-settings="title">A Documentary Map</h1>
+      <div class="intro-subtitle" data-i18n="intro.subtitle" data-settings="subtitle">A documentary photo-map</div>
     </div>
 
-    <p class="intro-para" data-i18n="intro.p1">
-      A short walk along the southern edge of UC Santa Barbara, where the campus
-      gives way to bluff, chaparral, and the sea. These photographs return to that
-      seam across a few years and seasons: an entrance monument, a warning sign at
-      a slipping cliff, a storage container left on the sand, the Channel Islands
-      held on the horizon. Read it as a map, or top to bottom as a walk.
+    <p class="intro-para" data-i18n="intro.p1" data-settings="intro">
+      Welcome to your map. Replace this with a sentence or two about the place or
+      story it documents, then add your photographs in the editor.
     </p>
 
     <div class="intro-tip" data-i18n-html="intro.tip">
@@ -92,49 +92,42 @@
       <a href="gallery.html" class="intro-btn intro-btn-secondary" data-feature="gallery" data-i18n="intro.essay">View as photo essay</a>
     </div>
 
-    <div class="intro-credit" data-i18n="intro.credit">Photographs and text by Jeff O'Brien, Material / Image Research Lab, UC Santa Barbara.</div>
+    <div class="intro-credit" data-i18n="intro.credit" data-settings="credit">Photographs and text by you.</div>
   </div>
 </div>
 
 
-<div id="header">
-  <div class="header-left">
+<header id="header">
+  <div class="brand">
+    <span class="bleed" aria-hidden="true"></span>
     <h1><span data-site-title>MIRL Map</span></h1>
-    <span class="sub" data-i18n="head.sub">A documentary map</span>
+    <span class="sub" data-i18n="head.sub" data-settings="subtitle">A documentary map</span>
   </div>
+  <!-- The two readings of one body of photographs -->
+  <nav class="views" aria-label="Readings">
+    <a class="view on" href="index.html" aria-current="page" data-i18n="nav.map">Map</a>
+    <a class="view" href="gallery.html" data-feature="gallery" data-i18n="nav.essay">Essay</a>
+  </nav>
   <div id="header-controls">
     <!-- Base-layer buttons are generated from CONFIG.baseLayers -->
-    <div class="layer-group" id="base-layer-btns"></div>
-    <div class="h-div"></div>
+    <div class="layer-group" id="base-layer-btns" role="group" aria-label="Basemap"></div>
     <!-- Historical-layer buttons + Compare are generated from CONFIG (hidden when empty) -->
-    <div class="layer-group" id="hist-layer-group" aria-label="Historical layers"><span id="hist-layer-btns"></span></div>
-    <div class="h-div" data-lang-toggle></div>
+    <div class="layer-group" id="hist-layer-group" role="group" aria-label="Historical layers"><span id="hist-layer-btns"></span></div>
     <!-- Language toggle is generated from CONFIG.languages (hidden when there is no second language) -->
-    <div class="layer-group" id="lang-btns" data-lang-toggle></div>
+    <div class="layer-group" id="lang-btns" role="group" aria-label="Language" data-lang-toggle></div>
     <div class="h-div"></div>
-    <div class="layer-group">
-      <button class="layer-btn active" id="btn-layers" onclick="toggleLayerPanel()">&#9776; <span data-i18n="nav.layers">Layers</span></button>
-    </div>
-    <div class="h-div" data-feature="search"></div>
-    <button class="layer-btn" id="btn-search" data-feature="search" onclick="toggleSearchPanel()" aria-label="Search photos and narratives" aria-expanded="false" aria-controls="search-panel">&#x1F50D; <span data-i18n="nav.search">Search</span></button>
-    <div class="h-div" data-feature="wander"></div>
-    <button class="layer-btn" id="btn-wander" data-feature="wander" onclick="wanderToRandomPhoto()" aria-label="Open a random photo" title="Open a random photograph (or press W)">&#9860; <span data-i18n="nav.wander">Wander</span></button>
-    <div class="h-div" data-feature="gallery"></div>
-    <a href="gallery.html" class="layer-btn" data-feature="gallery" style="text-decoration:none;">&#9707; <span data-i18n="nav.gallery">Gallery</span></a>
-    <div class="h-div" data-feature="timeline"></div>
+    <button class="layer-btn" id="btn-layers" onclick="toggleLayerPanel()" aria-controls="layer-panel"><span data-i18n="nav.layers">Layers</span></button>
+    <button class="layer-btn" id="btn-search" data-feature="search" onclick="toggleSearchPanel()" aria-label="Search photos and narratives" aria-expanded="false" aria-controls="search-panel"><span data-i18n="nav.search">Search</span></button>
+    <button class="layer-btn" id="btn-wander" data-feature="wander" onclick="wanderToRandomPhoto()" aria-label="Open a random photo" title="Open a random photograph (or press W)"><span data-i18n="nav.wander">Wander</span></button>
     <button class="layer-btn" id="btn-timeline" data-feature="timeline" onclick="toggleTimeline()" aria-label="Timeline" aria-expanded="false" aria-controls="timeline-panel" data-i18n="nav.timeline">Timeline</button>
-    <div class="h-div" data-feature="statistics"></div>
     <button class="layer-btn" id="btn-stats" data-feature="statistics" onclick="toggleStats()" aria-label="Statistics" aria-expanded="false" aria-controls="stats-panel" data-i18n="nav.stats">Statistics</button>
-    <div class="h-div" data-feature="sources"></div>
     <button class="layer-btn" id="btn-sources" data-feature="sources" onclick="toggleSources()" aria-label="Sources" aria-expanded="false" aria-controls="sources-panel" data-i18n="nav.sources">Sources</button>
     <div class="h-div"></div>
     <button id="btn-help" onclick="toggleHelp()" aria-label="How to use this map" aria-expanded="false" aria-controls="help-panel" title="How to use this map">?</button>
-    <div class="h-div"></div>
-    <button id="btn-a11y" onclick="toggleA11y()" aria-label="Accessibility options" aria-expanded="false" aria-controls="a11y-panel">Aa</button>
-    <div class="h-div"></div>
+    <button id="btn-a11y" onclick="toggleA11y()" aria-label="Accessibility options" aria-expanded="false" aria-controls="a11y-panel" title="Text size, contrast, motion">Aa</button>
     <button id="btn-fs" onclick="toggleFS()" aria-label="Toggle fullscreen" title="Toggle fullscreen">&#x26F6;</button>
   </div>
-</div>
+</header>
 
 <div id="a11y-panel" role="dialog" aria-label="Accessibility options" aria-modal="false">
   <h3 data-i18n="a11y.title">Accessibility</h3>
@@ -182,29 +175,29 @@
   <div class="help-section">
     <h4>Top bar</h4>
     <ul>
-      <li><b>Map style</b>: switch the base map.</li>
-      <li><b>&#x1F50D; Search</b>: search captions, filenames, and narratives.</li>
-      <li><b>&#9860; Wander</b>: open a random photograph (<kbd>W</kbd>).</li>
-      <li><b>&#9707; Gallery</b>: read the same material as a photo essay.</li>
-      <li><b>Aa</b>: text size, high-contrast, reduce-motion options.</li>
+      <li><b>Map</b> and <b>Essay</b>: the two readings of the same photographs.</li>
+      <li><b>Streets</b>, <b>Satellite</b>, <b>Topo</b>: switch the basemap.</li>
+      <li><b>Search</b>: search captions, file names, and narratives (<kbd>/</kbd>).</li>
+      <li><b>Wander</b>: open a random photograph (<kbd>W</kbd>).</li>
+      <li><b>Aa</b>: text size, high contrast, and reduced motion.</li>
     </ul>
   </div>
   <div class="help-section">
-    <h4>Layers panel (&#9776;)</h4>
+    <h4>Layers</h4>
     <p class="help-p">Toggle the optional overlays you have turned on in <code>js/config.js</code> (landmarks, sightlines, area polygons, and so on).</p>
   </div>
   <div class="help-section">
     <h4>Photo drawer</h4>
     <ul>
-      <li>Use <b>&lsaquo; Prev</b> / <b>Next &rsaquo;</b> or the arrow keys.</li>
-      <li><b>&#128203; Cite</b>: export a citation in Chicago, MLA, APA, or BibTeX.</li>
-      <li>The URL updates with <code>?photo=…</code> &mdash; a shareable permalink.</li>
+      <li>Use <b>Prev</b> and <b>Next</b>, or the arrow keys.</li>
+      <li><b>Cite this photograph</b>: a citation in Chicago, MLA, APA, or BibTeX.</li>
+      <li>The address updates with <code>?photo=…</code>, a permalink you can share.</li>
     </ul>
   </div>
   <div class="help-section" data-feature="kmlExport">
     <h4>Export</h4>
     <button class="help-btn-cta" onclick="downloadKML()" aria-label="Download photos as KML for Google Earth">
-      &#x21E9; Download .kml for Google Earth
+      Download .kml for Google Earth
     </button>
     <p class="help-hint">A portable index of every photo and overlay. Each placemark links back to this map.</p>
   </div>
@@ -212,6 +205,15 @@
 </div>
 
 <div id="map" role="application" aria-label="Interactive documentary map"></div>
+
+<!-- Shown by js/map.js only when the map has no photographs yet. -->
+<div id="empty-state" aria-live="polite">
+  <div class="es-card">
+    <div class="es-h" data-i18n="empty.h">No photographs yet</div>
+    <p class="es-p" data-i18n="empty.p">This map is waiting for its first photograph.</p>
+    <a class="es-btn" href="admin/" data-i18n="empty.btn">Add your first photograph &rarr;</a>
+  </div>
+</div>
 
 <div id="compare-panel" data-feature="compare" role="region" aria-label="Side-by-side layer comparison" aria-hidden="true">
   <span class="cmp-lbl" data-i18n="cmp.label">Compare</span>
@@ -224,7 +226,7 @@
 
 <div id="layer-panel" role="region" aria-label="Map layers">
   <button id="layer-close" onclick="toggleLayerPanel()" aria-label="Close layers panel">&#x2715;</button>
-  <h3 data-i18n="lp.title">Map Layers</h3>
+  <h3 data-i18n="lp.title">Map layers</h3>
 
   <div class="lp-row" onclick="togLayer('photos')">
     <div class="chk on" id="ck-photos"></div>
@@ -232,7 +234,7 @@
   </div>
   <div class="lp-row" data-feature="sightlines" onclick="togLayer('viewsheds')" title="Draw every photo's camera direction and field of view at once">
     <div class="chk" id="ck-viewsheds"></div>
-    <div class="sw" style="background:#f0c068;border:1px solid #c89048;"></div>
+    <div class="sw" style="background:var(--key-wash);border:1px solid var(--key-ink);"></div>
     <span class="lp-lbl" data-i18n="lp.sightlines">Sightlines (all photos)</span>
   </div>
 
@@ -242,10 +244,10 @@
       <span class="lp-lbl" data-i18n="lp.landmarks">Landmarks</span>
     </div>
     <div class="lp-legend">
-      <div class="lp-leg-row"><div class="lp-leg-dot" style="background:#4CAF50;"></div><span class="lp-leg-txt">Still standing</span></div>
-      <div class="lp-leg-row"><div class="lp-leg-dot" style="background:#FF9800;"></div><span class="lp-leg-txt">Ruins</span></div>
-      <div class="lp-leg-row"><div class="lp-leg-dot" style="background:#F44336;"></div><span class="lp-leg-txt">Destroyed</span></div>
-      <div class="lp-leg-row"><div class="lp-leg-dot" style="background:#2196F3;"></div><span class="lp-leg-txt">Occupied</span></div>
+      <div class="lp-leg-row"><div class="lp-leg-dot" style="background:var(--ok);"></div><span class="lp-leg-txt">Still standing</span></div>
+      <div class="lp-leg-row"><div class="lp-leg-dot" style="background:var(--warn);"></div><span class="lp-leg-txt">Ruins</span></div>
+      <div class="lp-leg-row"><div class="lp-leg-dot" style="background:var(--loss);"></div><span class="lp-leg-txt">Destroyed</span></div>
+      <div class="lp-leg-row"><div class="lp-leg-dot" style="background:var(--surv);"></div><span class="lp-leg-txt">Occupied</span></div>
     </div>
   </div>
 
@@ -292,7 +294,7 @@
 
   <div class="lp-row" data-feature="testimonies" onclick="togLayer('testimonies')" title="First-person voices pinned at relevant locations">
     <div class="chk" id="ck-testimonies"></div>
-    <div class="sw" style="background:#2e7080;border:1.5px solid #fff;box-shadow:0 0 0 1px #2e7080;"></div>
+    <div class="sw" style="background:var(--key-ink);border:1.5px solid #fff;box-shadow:0 0 0 1px var(--key-ink);"></div>
     <span class="lp-lbl" data-i18n="lp.voices">Voices</span>
   </div>
 
@@ -306,7 +308,7 @@
     <div class="lp-row lp-row-with-action">
       <div class="lp-row-toggle" onclick="togLayer('trail')">
         <div class="chk" id="ck-trail"></div>
-        <div class="sw" style="background:transparent;border-top:2px dashed #5a3e28;border-bottom:none;height:4px;align-self:center;"></div>
+        <div class="sw" style="background:transparent;border-top:2px dashed var(--key-ink);border-bottom:none;height:4px;align-self:center;"></div>
         <span class="lp-lbl" data-i18n="lp.trail">Walking trail</span>
       </div>
       <button class="lp-action" id="btn-trail-play" onclick="animateTrail()" title="Play the trail">&#9654;</button>
@@ -349,7 +351,8 @@
 <div id="about-panel" role="region" aria-label="About this project">
   <button id="about-close" onclick="toggleAbout()" aria-label="Close about panel">&#x2715;</button>
   <h2><span data-site-title>MIRL Map</span></h2>
-  <p>A short documentary walk along the coastal edge of UC Santa Barbara, by Jeff O'Brien. Built with MIRL Map, a documentary photo-map platform from the Material / Image Research Lab, UC Santa Barbara.</p>
+  <p data-settings="about">A short note about this project and who made it. You can edit it in the Map details form.</p>
+  <p class="about-edit"><a href="admin/" data-i18n="about.edit">Editing this map? Open the dashboard &rarr;</a></p>
 </div>
 
 <div id="search-panel" role="dialog" aria-label="Search photos">
@@ -362,7 +365,7 @@
 </div>
 
 <div id="status-bar">
-  <div id="photo-count" onclick="toggleAbout()" data-i18n-html="status.count">photographs &nbsp;&middot;&nbsp; About &#9432;</div>
+  <div id="photo-count" onclick="toggleAbout()"><span id="photo-count-n">0 photographs</span> &nbsp;&middot;&nbsp; About</div>
 </div>
 
 <div id="info-drawer" role="dialog" aria-label="Photo details" aria-modal="true">
@@ -407,23 +410,23 @@
 
 
 <!-- Content data (edit these). Module files may be empty; see CONTENT-GUIDE.md. -->
-<script src="js/data/photos.js?v=7"></script>
-<script src="js/data/sources.js?v=7"></script>
-<script src="js/data/landmarks.js?v=7"></script>
-<script src="js/data/places.js?v=7"></script>
-<script src="js/data/testimonies.js?v=7"></script>
-<script src="js/data/matson.js?v=7"></script>
-<script src="js/data/greenline.js?v=7"></script>
-<script src="js/data/geodata.js?v=7"></script>
-<script src="js/data/timeline.js?v=7"></script>
-<script src="js/data/stats.js?v=7"></script>
-<script src="js/data/i18n.js?v=7"></script>
+<script src="js/data/photos.js?v=14"></script>
+<script src="js/data/sources.js?v=14"></script>
+<script src="js/data/landmarks.js?v=14"></script>
+<script src="js/data/places.js?v=14"></script>
+<script src="js/data/testimonies.js?v=14"></script>
+<script src="js/data/matson.js?v=14"></script>
+<script src="js/data/greenline.js?v=14"></script>
+<script src="js/data/geodata.js?v=14"></script>
+<script src="js/data/timeline.js?v=14"></script>
+<script src="js/data/stats.js?v=14"></script>
+<script src="js/data/i18n.js?v=14"></script>
 <!-- Engine (do not normally edit) -->
-<script src="js/a11y.js?v=7"></script>
-<script src="js/i18n.js?v=7"></script>
-<script src="js/help.js?v=7"></script>
-<script src="js/kml.js?v=7"></script>
-<script src="js/narratives.js?v=7"></script>
-<script src="js/map.js?v=7"></script>
+<script src="js/a11y.js?v=14"></script>
+<script src="js/i18n.js?v=14"></script>
+<script src="js/help.js?v=14"></script>
+<script src="js/kml.js?v=14"></script>
+<script src="js/narratives.js?v=14"></script>
+<script src="js/map.js?v=14"></script>
 </body>
 </html>

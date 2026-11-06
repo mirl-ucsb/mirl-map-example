@@ -64,7 +64,7 @@ function _loadEnglishNarrative(base) {
 function renderNarrative(text) {
   // Editing mode: don't show narrative text at all
   if (NARRATIVES_HIDDEN) {
-    return '<p style="color:#74859a;font-style:italic;">Historical narratives are being edited and will be restored shortly.</p>';
+    return '<p class="drawer-note">Historical narratives are being edited and will be restored shortly.</p>';
   }
   if (!text) return '';
   // Split on one or more blank lines; render each paragraph
@@ -115,6 +115,23 @@ function renderSourceList(text) {
   return '<div class="narrative-sources"><ul>' +
     items.map(function (i) { return '<li>' + i + '</li>'; }).join('') +
     '</ul></div>';
+}
+
+/* The sources a narrative cites inline, which renderSourceList already lists
+   beneath it. A photograph's own source list (the drawer's Sources block, the
+   essay's list under each entry) leaves these out, so no source is listed twice. */
+function citedSourceIds(text) {
+  if (!text || typeof srcLib === 'undefined') return [];
+  var pattern = /\[([A-Z]{2,8})(?:\s+pp?\.\s*\d+(?:[–-]\d+)?)?\]/g;
+  var ids = [], m;
+  while ((m = pattern.exec(text)) !== null) {
+    if (srcLib[m[1]] && ids.indexOf(m[1]) < 0) ids.push(m[1]);
+  }
+  return ids;
+}
+function uncitedSourceIds(ids, text) {
+  var cited = citedSourceIds(text);
+  return (ids || []).filter(function (id) { return cited.indexOf(id) < 0; });
 }
 
 /* ── Citation tokens ─────────────────────────────────────

@@ -1,0 +1,58 @@
+# Turns a batch of uploaded photographs into map pins, in one click.
+#
+# How to use it: in your map's editor, open the Media library and upload many
+# photographs at once (drag them in, or select several). They are now in your
+# repository but are not yet pins. Come here, to the Actions tab, choose
+# "Import photos" on the left, and press "Run workflow". This creates a pin for
+# each newly uploaded image (its location and date come from the photo's own GPS),
+# then rebuilds and republishes the map. You then write the captions in the editor.
+#
+# Deleting a pin afterwards does not bring it back: scripts/import_photos.py keeps
+# a log (content/.import-log) of what it has already imported.
+name: Import photos
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write   # commit the new pins
+  actions: write    # trigger the deploy afterwards
+
+concurrency:
+  group: import-photos
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: pip install Pillow PyYAML
+
+      - name: Scaffold a pin for each newly uploaded photograph
+        run: python3 scripts/import_photos.py
+
+      - name: Commit the new pins
+        id: commit
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A content
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No new photographs to import."
+          else
+            git commit -m "Import photographs: scaffold a pin for each newly uploaded image"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish (rebuild and deploy the map)
+        if: steps.commit.outputs.changed == 'true'
+        run: gh workflow run static.yml
+        env:
+          GH_TOKEN: ${{ github.token }}

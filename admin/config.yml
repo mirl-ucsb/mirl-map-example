@@ -1,9 +1,9 @@
 # ============================================================================
-# mirl-map content admin — Decap CMS configuration
+# mirl-map content admin: the CMS configuration (Sveltia CMS)
 # ----------------------------------------------------------------------------
 # This powers the /admin editor. Editors log in with GitHub and add/edit
 # photographs, captions, and narratives; their changes are committed to the
-# repo, and a GitHub Action (.github/workflows/build-content.yml) regenerates
+# repo, and a GitHub Action (.github/workflows/static.yml) regenerates
 # js/data/photos.js, the narratives, and the web/thumb tiers.
 #
 # The "Log in with GitHub" sign-in is handled by MIRL's shared login helper
@@ -13,13 +13,13 @@
 
 backend:
   name: github
-  repo: YOUR-USER/mirl-map                               # EDIT ME — your GitHub "owner/repo"
+  repo: mirl-ucsb/mirl-map-example
   branch: main
   base_url: https://mirl-map-auth.mirl-ucsb.workers.dev  # MIRL's shared login helper (leave as-is)
 
-# Test the CMS locally with no login:  run `npx decap-server` then open
-# http://localhost:8766/admin/  — Decap will read/write your local files.
-local_backend: true
+# To test the CMS locally, open /admin/ and click "Work with Local Repository",
+# then choose this repo's folder. Sveltia reads and writes your local files
+# directly through the browser, with no separate server to run.
 
 # Uploaded photographs are committed here (full resolution); the Action makes
 # the web/thumb tiers afterward.
@@ -27,6 +27,29 @@ media_folder: "photos"
 public_folder: "/photos"
 
 collections:
+  - name: "settings"
+    label: "Map details"
+    description: "The name and words that frame your map, who to credit in citations, and where the map opens. Edit these, save, and your map rebuilds and republishes on its own within a minute or two."
+    delete: false
+    files:
+      - name: "details"
+        label: "Map details"
+        file: "content/settings.yml"
+        format: "yaml"
+        fields:
+          - { name: "title",    label: "Title",    widget: "string", required: false, hint: "The big title on your map and the browser tab. Also the project name in citations." }
+          - { name: "subtitle", label: "Tagline",  widget: "string", required: false, hint: "A short line under the title." }
+          - { name: "intro",    label: "Welcome paragraph", widget: "text", required: false, hint: "A sentence or two on the opening screen, introducing the place or story." }
+          - { name: "about",    label: "About note", widget: "text", required: false, hint: "A longer note about the project and who made it, shown in the About panel." }
+          - { name: "credit",   label: "Credit line", widget: "string", required: false, hint: "Shown at the foot of the page, e.g. Photographs and text by Jane Doe." }
+          - { name: "cover",    label: "Social-preview image", widget: "image", required: false, hint: "Shown when a link to your map is shared. A wide photograph works best. Leave blank for none." }
+          - { name: "author",   label: "Author for citations", widget: "string", required: false, hint: "The name credited in every 'cite this photograph' export, e.g. Jane Doe." }
+          - { name: "place",    label: "Place for citations",  widget: "string", required: false, hint: "Appended to citations, e.g. Santa Barbara, California. Leave blank to omit." }
+          - { name: "start_lat",  label: "Opening latitude",  widget: "number", required: false, value_type: "float", step: 0.000001, hint: "Optional. Leave blank to open on your photographs automatically." }
+          - { name: "start_lon",  label: "Opening longitude", widget: "number", required: false, value_type: "float", step: 0.000001, hint: "Optional. Pair with the latitude above." }
+          - { name: "start_zoom", label: "Opening zoom",      widget: "number", required: false, value_type: "int", hint: "Optional. 1 is the whole world, ~13 a town, ~16 a few streets." }
+          - { name: "strip_exif", label: "Remove photo metadata on publish", widget: "boolean", required: false, default: true, hint: "Strongly recommended. Strips GPS coordinates and camera metadata from the published photographs; the map's own markers still show where each was taken. Keep your untouched originals in photos_backup/." }
+
   - name: "photographs"
     label: "Photographs"
     label_singular: "Photograph"
@@ -40,9 +63,13 @@ collections:
     fields:
       - { name: "image",    label: "Photograph", widget: "image" }
       - { name: "caption",  label: "Caption",    widget: "string", hint: "One or two sentences shown under the photo." }
+      - { name: "caption_2", label: "Caption, second language", widget: "string", required: false, hint: "Optional. The same caption in another language, shown under the first. Right-to-left scripts are handled automatically." }
+      - { name: "rights",   label: "Rights / credit", widget: "string", required: false, hint: "Optional. Who holds the rights or how to credit this photograph, e.g. CC BY 4.0, or Courtesy of the family." }
+      - { name: "order",    label: "Order",      widget: "number", required: false, value_type: "int", hint: "Optional. A number to sequence the photo essay (1, 2, 3 ...). Photos without one keep their file order." }
       - { name: "body",     label: "Narrative",  widget: "markdown", required: false, hint: "Optional. Cite sources with tokens like [SAMP]." }
-      - { name: "lat",      label: "Latitude",  widget: "number", required: false, value_type: "float", step: 0.000001, hint: "Auto-filled from the photo's GPS if blank." }
-      - { name: "lon",      label: "Longitude", widget: "number", required: false, value_type: "float", step: 0.000001, hint: "Auto-filled from the photo's GPS if blank." }
+      - { name: "location", label: "Location (click to place)", widget: "map", type: "Point", decimals: 6, required: false, hint: "Click the map to place this photograph. Leave blank to use the photo's own GPS, or type coordinates below." }
+      - { name: "lat",      label: "Latitude",  widget: "number", required: false, value_type: "float", step: 0.000001, hint: "Optional fallback. Used only if you have not placed it on the map above; auto-filled from the photo's GPS if blank." }
+      - { name: "lon",      label: "Longitude", widget: "number", required: false, value_type: "float", step: 0.000001, hint: "Optional fallback. Pair with the latitude above." }
       - { name: "bearing",  label: "Camera bearing",  widget: "number", required: false, value_type: "float", hint: "Auto-filled from EXIF. Degrees clockwise from north; draws the sightline cone." }
       - { name: "fov",      label: "Field of view",   widget: "number", required: false, value_type: "float", hint: "Auto-filled from EXIF (degrees)." }
       - { name: "taken_at", label: "Taken at",        widget: "string", required: false, hint: "Auto-filled from EXIF, e.g. 2026:05:01 14:10:00." }

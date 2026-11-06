@@ -4,7 +4,7 @@ One Markdown file per photograph holds its written narrative. The filename is
 the photo's filename without its extension:
 
 ```
-photos/sample-01.jpg   →   narratives/sample-01.md
+photos/old-pier.jpeg   →   narratives/old-pier.md
 ```
 
 Photographs without a file here simply show their caption; narratives are
@@ -27,5 +27,5 @@ default-language narrative is shown instead. See `narratives/ar/README.md`.
 ## Editorial voice
 
 Set your own. A useful default for documentary work: cite every factual claim,
-and never invent a quotation — but that is a content choice, not a rule the
+and never invent a quotation, but that is a content choice, not a rule the
 platform enforces.

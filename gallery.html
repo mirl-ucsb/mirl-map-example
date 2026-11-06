@@ -3,33 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MIRL Map — Photo Essay</title>
+<title>A Documentary Map</title>
 
-<!-- SEO / social. EDIT ME: update these (and js/config.js) when you fork. -->
+<!-- SEO / social. The title and description follow your Map details; a social-preview
+     image is written between the OG markers below when you set a cover in Map details. -->
 <meta name="description" content="A documentary photo essay: geolocated photographs paired with per-photo narratives.">
-<meta name="author" content="Jeff O'Brien">
+<meta name="author" content="">
 <link rel="canonical" href="https://YOUR-USER.github.io/mirl-map/gallery.html">
 <meta property="og:type" content="article">
-<meta property="og:site_name" content="MIRL Map">
-<meta property="og:title" content="MIRL Map — Photo Essay">
+<meta property="og:site_name" content="A Documentary Map">
+<meta property="og:title" content="A Documentary Map">
 <meta property="og:description" content="A documentary photo essay: geolocated photographs paired with per-photo narratives.">
 <meta property="og:url" content="https://YOUR-USER.github.io/mirl-map/gallery.html">
-<meta property="og:image" content="https://YOUR-USER.github.io/mirl-map/photos/web/sample-1.jpeg">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://YOUR-USER.github.io/mirl-map/photos/web/sample-1.jpeg">
+<!-- MIRL:OG-START --><!-- MIRL:OG-END -->
+<meta name="twitter:card" content="summary">
 
-<meta name="theme-color" content="#1b2733">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='10' fill='%231b2733'/><circle cx='32' cy='27' r='9' fill='%23e9edf1'/><circle cx='32' cy='27' r='3.4' fill='%230f766e'/><path d='M32 36 L24 50 L40 50 Z' fill='%23e9edf1'/></svg>">
+<!-- Favicon and fonts are local (favicon.svg, fonts/ via css/style.css). -->
+<meta name="theme-color" content="#fefaf0">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Amiri:wght@400;700&display=swap"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
-<link rel="stylesheet" href="css/style.css?v=7"/>
-<link rel="stylesheet" href="css/gallery.css?v=7"/>
-<link rel="stylesheet" href="css/a11y.css?v=7"/>
+<link rel="stylesheet" href="css/style.css?v=14"/>
+<link rel="stylesheet" href="css/gallery.css?v=14"/>
+<link rel="stylesheet" href="css/a11y.css?v=14"/>
 
-<script src="js/config.js?v=7"></script>
+<script src="js/config.js?v=14"></script>
+<script src="js/data/settings.js?v=14"></script>
 <script>
   /* Apply saved language/direction before paint (see index.html). */
   try {
@@ -43,22 +42,26 @@
   } catch (e) {}
 </script>
 </head>
-<body>
+<body class="page-essay">
 
-<div id="header">
-  <div class="header-left">
+<header id="header">
+  <div class="brand">
+    <span class="bleed" aria-hidden="true"></span>
     <h1><span data-site-title>MIRL Map</span></h1>
     <span class="sub" data-i18n="g.sub">Photographs</span>
   </div>
+  <!-- The two readings of one body of photographs -->
+  <nav class="views" aria-label="Readings">
+    <a class="view" href="index.html" data-i18n="nav.map">Map</a>
+    <a class="view on" href="gallery.html" aria-current="page" data-i18n="nav.essay">Essay</a>
+  </nav>
   <div id="header-controls">
     <!-- Language toggle generated from CONFIG.languages (hidden when no second language) -->
-    <div class="layer-group" id="lang-btns" data-lang-toggle></div>
-    <div class="h-div" data-lang-toggle></div>
-    <button id="btn-a11y" onclick="toggleA11y()" aria-label="Accessibility options" aria-expanded="false" aria-controls="a11y-panel">Aa</button>
-    <div class="h-div"></div>
-    <a href="index.html" class="layer-btn nav-back" style="text-decoration:none;" data-i18n="nav.map">&#8592; Map</a>
+    <div class="layer-group" id="lang-btns" role="group" aria-label="Language" data-lang-toggle></div>
+    <button id="btn-print" class="layer-btn" onclick="printEssay()" aria-label="Print or save the photo essay as a PDF" title="Print or save the essay as a PDF">Print or PDF</button>
+    <button id="btn-a11y" onclick="toggleA11y()" aria-label="Accessibility options" aria-expanded="false" aria-controls="a11y-panel" title="Text size, contrast, motion">Aa</button>
   </div>
-</div>
+</header>
 
 <div id="a11y-panel" role="dialog" aria-label="Accessibility options" aria-modal="false">
   <h3 data-i18n="a11y.title">Accessibility</h3>
@@ -94,14 +97,12 @@
   <div id="gallery-intro">
     <h2 data-i18n="g.intro.h2"><span data-site-title>MIRL Map</span></h2>
     <p data-i18n="g.intro.p">
-      The same photographs as the map, read top to bottom: a short walk along the
-      edge where UC Santa Barbara meets the Pacific, and the small signs of an
-      institution managing its own coastline. A mini-map at the side follows the
-      photograph you are reading.
+      The same photographs as the map, read top to bottom. A mini-map at the side
+      follows the photograph you are reading.
     </p>
   </div>
   <div id="gallery-grid"></div>
-  <footer id="gallery-footer" data-i18n="intro.credit">Photographs and text by Jeff O'Brien, Material / Image Research Lab, UC Santa Barbara.</footer>
+  <footer id="gallery-footer" data-i18n="intro.credit" data-settings="credit">Photographs and text by you.</footer>
 </main>
 
 <aside id="scrolly" aria-hidden="true" aria-label="Where the photograph you are reading was taken">
@@ -124,13 +125,13 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script src="js/data/photos.js?v=7"></script>
-<script src="js/data/sources.js?v=7"></script>
-<script src="js/data/testimonies.js?v=7"></script>
-<script src="js/data/i18n.js?v=7"></script>
-<script src="js/a11y.js?v=7"></script>
-<script src="js/i18n.js?v=7"></script>
-<script src="js/narratives.js?v=7"></script>
-<script src="js/gallery.js?v=7"></script>
+<script src="js/data/photos.js?v=14"></script>
+<script src="js/data/sources.js?v=14"></script>
+<script src="js/data/testimonies.js?v=14"></script>
+<script src="js/data/i18n.js?v=14"></script>
+<script src="js/a11y.js?v=14"></script>
+<script src="js/i18n.js?v=14"></script>
+<script src="js/narratives.js?v=14"></script>
+<script src="js/gallery.js?v=14"></script>
 </body>
 </html>

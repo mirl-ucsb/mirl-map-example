@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>MIRL Map editor</title>
+  <meta name="theme-color" content="#fefaf0">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+  <!-- Styles for the note below only, scoped to it: the editor that mounts on
+       this page brings its own interface, which a shared stylesheet would disturb. -->
+  <style>
+    @font-face { font-family: "Familjen Grotesk"; src: url("../../fonts/familjen-grotesk-latin-600-normal.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+    @font-face { font-family: "Epilogue"; src: url("../../fonts/epilogue-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+    @font-face { font-family: "Epilogue"; src: url("../../fonts/epilogue-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+    @font-face { font-family: "Plex Mono"; src: url("../../fonts/ibm-plex-mono-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+    #not-a-map { max-width: 540px; margin: 14vh auto; padding: 0 24px; font-family: "Epilogue", "Helvetica Neue", Arial, sans-serif; font-size: 16px; color: #1d1b18; line-height: 1.6; }
+    #not-a-map h1 { font-family: "Familjen Grotesk", "Epilogue", sans-serif; font-size: 30px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; margin: 0 0 12px; }
+    #not-a-map p { color: #4f4b44; margin: 0 0 12px; }
+    #not-a-map .quiet { color: #6b665c; font-size: 15px; margin-top: 18px; }
+    #not-a-map code { font-family: "Plex Mono", Menlo, monospace; font-size: 13.5px; background: #f5f0e3; border: 1px solid #e9e3d4; border-radius: 2px; padding: 0 4px; }
+    #not-a-map .cta { display: inline-block; margin-top: 10px; padding: 10px 18px; font-weight: 500; color: #fefaf0; background: #1d1b18; border-radius: 3px; text-decoration: none; }
+    #not-a-map .cta:hover { background: #3a362f; }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+</head>
+<body>
+  <div id="not-a-map" style="display:none">
+    <h1>This is the MIRL Map template</h1>
+    <p>You have opened the template's own editor, which is not connected to a real map, so signing in cannot save anywhere.</p>
+    <p><a class="cta" href="https://mirl-ucsb.github.io/mirl-map-landing/">Create your own map &rarr;</a></p>
+    <p class="quiet">Already have a map? Open <code>your-name.github.io/your-map/admin/</code> and edit from there.</p>
+  </div>
+  <script>
+    /* Which repository does this editor save to? We trust the address the map is served
+       from, your-name.github.io/your-map/, over the repo name written in the config
+       file, so a real map still works even if the one-time step that stamps the config
+       with its repository did not run. We load the config, point it at the resolved
+       repository, and start the CMS by hand. The template itself shows the note above. */
+    window.CMS_MANUAL_INIT = true;
+    (function () {
+      function notAMap() { document.getElementById('not-a-map').style.display = 'block'; }
+
+      var host = location.hostname, segs = location.pathname.split('/').filter(Boolean);
+      var urlRepo = (/\.github\.io$/i.test(host) && segs.length)
+        ? host.replace(/\.github\.io$/i, '') + '/' + segs[0] : '';
+      if (urlRepo.toLowerCase() === 'mirl-ucsb/mirl-map') { notAMap(); return; }   // the template
+
+      fetch('../config.yml', { cache: 'no-store' })
+        .then(function (r) { return r.text(); })
+        .then(function (text) {
+          var cfg = null;
+          try { cfg = window.jsyaml.load(text); } catch (e) { cfg = null; }
+          if (!cfg || !cfg.backend) { notAMap(); return; }
+          // Prefer the serving address; fall back to the config file (local previews,
+          // custom domains).
+          var repo = urlRepo || cfg.backend.repo || '';
+          if (!repo || /YOUR-USER/i.test(repo) || repo.toLowerCase() === 'mirl-ucsb/mirl-map') {
+            notAMap(); return;
+          }
+          cfg.backend.repo = repo;
+          cfg.load_config_file = false;
+          var s = document.createElement('script');
+          s.src = 'https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js';
+          s.onload = function () { try { window.CMS.init({ config: cfg }); } catch (e) {} };
+          document.body.appendChild(s);
+        })
+        .catch(notAMap);
+    })();
+  </script>
+</body>
+</html>

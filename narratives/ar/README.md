@@ -5,13 +5,13 @@ If you enable a second language in `js/config.js`
 translated narratives in this folder, named the same as the English file:
 
 ```
-narratives/sample-01.md        (default language)
-narratives/ar/sample-01.md     (second language)
+narratives/old-pier.md        (default language)
+narratives/ar/old-pier.md     (second language)
 ```
 
 This folder is named `ar/` only as the shipped example. If your second language
 is, say, Spanish, the loader still reads from `narratives/ar/` unless you change
-the path in `js/narratives.js` — the simplest convention is to keep the `ar/`
+the path in `js/narratives.js`. The simplest convention is to keep the `ar/`
 folder name and just put your second language's files in it, or rename the
 folder and update the one `fetch('narratives/ar/' + ...)` line in
 `js/narratives.js`.

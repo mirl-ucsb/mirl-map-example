@@ -1,139 +1,139 @@
 # MIRL Map
 
-**Put your photographs on a map, and tell their stories.**
+**Document a place through its photographs, and the writing that interprets them.**
 
-MIRL Map is a free, friendly tool for documenting a place through photographs.
-You pin each photo to the spot where it was taken, give it a caption, and add as
-much or as little writing as you like. The result is two things at once:
+> **In active development, not yet announced.** This tool is being built and refined in the open, and is not yet listed among the released MIRL Tools. Its features, file formats, and interface may still change, and some parts may be incomplete or rough. Please keep your own copies of anything important, and reports of whatever breaks are welcome.
 
-- an **interactive map** people can explore, clicking any photograph to read
-  about it, and
-- a **photo essay** they can read straight through, from the first image to the
-  last.
+![A MIRL Map: a paper-toned street map of the UC Santa Barbara coast with photographs pinned along a bluff path, one of them showing the direction its camera faced, and a side panel with that photograph, its caption, a narrative, and its sources.](docs/images/map.jpg)
 
-It was built for people in the **arts, humanities, and cultural heritage**:
-curators, archivists, scholars, artists, librarians, and community historians.
-**You do not need to know how to code to use it.**
+MIRL Map turns a body of photographs into two readings of the same material: an
+**interactive map**, where each image rests at the place it was made, and a
+**photo essay** that moves through them in sequence. You pin each photograph,
+give it a caption, and add as much interpretation as the work asks for. The
+result is a living, shareable piece of place-based scholarship.
 
-The project comes with a small sample map already filled in, so you can see how
-everything works before you add anything of your own.
+It was made for the **arts, humanities, and social sciences**: curators,
+archivists, historians, artists, ethnographers, librarians, and community
+researchers. **You do not need to know how to code to use it.**
+
+To see a finished one, the [live example](https://mirl-ucsb.github.io/mirl-map-example/)
+is a short documentary walk along the bluffs where the university meets the sea.
+
+---
+
+## Two readings of the same material
+
+Every MIRL Map gives two ways through the same photographs and words.
+
+**The map.** Your photographs appear where they were taken. A reader pans, zooms,
+and opens any one to find its caption, your writing, its sources, and a link they
+can cite or share. Nearby photographs gather into tidy clusters, so even hundreds
+stay easy to browse, and a small cone can show the direction each camera faced.
+
+**The essay.** The same photographs, read from first to last like a long-form
+piece, with a small map alongside the page that follows as you read. This is the
+slower, guided way through.
+
+![The photo essay view: a photograph of the coastal path above the caption and a small locator map at the side.](docs/images/gallery.jpg)
 
 ---
 
 ## What you might make with it
 
-A few examples:
-
 - A walk through a **neighborhood**, past and present.
 - The rooms and details of a single **building** or monument.
-- An **archaeological site** or excavation, photo by photo.
+- An **archaeological site** or excavation, photograph by photograph.
 - A **memory map** of a place that has changed or disappeared.
 - An **oral-history** project, with voices pinned to the places they describe.
-- A **field survey**, an exhibition, a residency, a pilgrimage route.
+- A **field survey**, an exhibition, a residency, a pilgrimage or migration route.
 
-If it can be photographed and placed on a map, it can become a MIRL Map.
+If a subject can be photographed and placed on a map, it can become a MIRL Map.
 
 ---
 
-## Two ways to see it
+## Create your own map
 
-Every MIRL Map gives you two views of the same photographs and words:
+**The simple way (recommended).** Visit the
+[MIRL Map home page](https://mirl-ucsb.github.io/mirl-map-landing/) and choose
+**Create your own map**. You sign in with GitHub, and a complete copy of the
+platform is made in your own account, ready to fill in. It is free, and the map
+is yours from the first moment. Within a minute or two your map and its editor
+are live on the web.
 
-**The map.** Your photographs appear as markers on a map of the area. Visitors
-pan, zoom, and click a photo to open it, along with its caption, your writing,
-and a link they can share. Nearby photos gather into tidy clusters, so even
-hundreds of them stay easy to browse.
+**Self-hosting (for the independently minded).** You can also use this repository
+as a template, host it yourself, and run your own login helper, for full
+independence from MIRL's infrastructure. The steps are in
+[ADMIN-SETUP.md](ADMIN-SETUP.md).
 
-**The essay.** The same photographs, read top to bottom like a long-form story,
-with a small map beside the page that follows along as you read. This is the
-slower, guided way through.
+Either way, a new map starts empty, waiting for your first photograph.
+
+---
+
+## Adding photographs and writing
+
+Each map has a **dashboard**, its home for editing. From there you add
+photographs, write, and shape how the map reads, all through simple forms. There
+are no files to touch and nothing to install.
+
+![The editing dashboard: the map's title, a count of photographs, and buttons to add a photograph, manage photographs, edit map details, and read the map as an essay, with a live preview below.](docs/images/dashboard.png)
+
+- **Add a photograph.** Drag in an image, write a caption, and add a narrative if
+  you like. **Its location is read from the photograph itself**, since most
+  cameras and phones record where each photo was taken. No location saved? Click
+  the map to place it, or type the coordinates.
+- **Add many at once.** Upload a batch in the media library and import them
+  together; each becomes a pin you then caption at your own pace.
+- **Edit the map's details.** Set the title, the opening words, the credit line,
+  and the **author and place used in citations**, all without editing code.
+- **Save, and it publishes itself.** Your change appears on the live map within
+  about a minute. Nothing else to press.
+
+If you prefer working in plain text, every photograph is also just a small file,
+and every field is explained in the [Content guide](CONTENT-GUIDE.md).
 
 ---
 
 ## What it does well
 
-- **Photographs know where they belong.** Most cameras and phones quietly record
-  the location of each photo. MIRL Map reads that on its own, so you usually do
-  not have to place anything by hand. (No location saved in the photo? You can
-  type it in.)
-- **Words, with proper sources.** Write a caption and a narrative for each
-  photograph. Note your sources, and they become tidy footnote-style links, plus
-  a ready-made citation for the photograph itself in Chicago, MLA, APA, or
-  BibTeX style.
+- **Words, with proper sources.** Note a source in your writing and it becomes a
+  tidy footnote-style link, with a deduplicated source list under the narrative.
+  Every photograph also carries a ready-made citation of itself, in **Chicago,
+  MLA, APA, and BibTeX**.
 - **Search** across every caption and every narrative at once.
-- **Optional layers** you switch on as your project grows: a documented
-  **timeline**, a **statistics** panel, first-person **oral-history voices**
-  pinned to places, **before-and-after** historical photographs, **historical map
-  overlays** you can slide side by side with today, and outlines of areas or
-  routes.
-- **Open in more than one language**, including right-to-left scripts such as
-  Arabic.
-- **Accessible by design**: larger text, a high-contrast mode, and reduced
-  motion, all remembered between visits.
-- **Free to publish online**, and it stays simple. Visitors need nothing but a
-  web browser.
+- **Optional layers** you switch on as a project grows: a documented timeline, a
+  statistics panel, first-person oral-history voices pinned to places,
+  before-and-after historical photographs, historical map overlays you can slide
+  against today, and outlines of areas or routes.
+- **More than one language**, including right-to-left scripts such as Arabic.
+- **Accessible by design**: larger text, high contrast, and reduced motion, all
+  remembered between visits.
+- **Open and free to publish.** Visitors need nothing but a web browser.
 
-You turn features on only when you want them. A brand-new map is just your
-photographs and your words. Everything else waits quietly until you reach for it.
-
----
-
-## Adding your photographs and stories
-
-There are two ways to add content, whichever suits you better:
-
-**1. A simple web editor (the gentle way, recommended for most people).** MIRL
-Map includes an **editor page** where you log in, drag in a photograph, type its
-caption, write its narrative, and click **Publish**, much like filling in a form.
-No files to touch, no code. This editor needs a one-time setup by someone
-comfortable following the steps in [ADMIN-SETUP.md](ADMIN-SETUP.md); after that,
-anyone you invite can use it.
-
-**2. Editing small text files.** If you would rather, each photograph is just a
-short text file you can edit, and your map's settings live in one place. The
-[Content guide](CONTENT-GUIDE.md) walks through every field in plain language,
-with examples you can copy and paste.
-
-Either way, your changes appear on the live map within about a minute.
-
----
-
-## Getting it set up
-
-To be upfront: putting your map *online for the world to see* takes a one-time
-setup that is a little technical. You give the project a free home on **GitHub**
-(a well-known place that hosts projects like this and serves them as a website at
-no cost), and switch that hosting on. It is a handful of steps, written out
-plainly in [ADMIN-SETUP.md](ADMIN-SETUP.md), and it is the sort of thing a
-tech-comfortable colleague, or the MIRL team, can help you do once.
-
-After that, the part you do again and again, adding photographs, captions, and
-stories, is the easy, non-technical part.
-
-Would you like to try it on your own computer first, before publishing anything?
-You can. The "Try it locally" steps are in [ADMIN-SETUP.md](ADMIN-SETUP.md).
+A new map is just your photographs and your words. Every further capability waits
+quietly until you reach for it.
 
 ---
 
 ## Your work stays yours
 
-- **You own your content.** Your photographs and your writing are yours. You set
-  whatever permissions and license you wish, and nothing is locked inside someone
-  else's platform.
-- **It is portable and lasting.** A MIRL Map is just photographs, plain text, and
-  a web page: formats that will still open years from now, on any host.
+- **You own your content.** Your photographs and your writing are yours, under
+  whatever license you choose. Nothing is locked inside someone else's platform.
+- **It is portable and lasting.** A MIRL Map is photographs, plain text, and a web
+  page: formats that will still open years from now, on any host.
 - **It is free to run.** No subscriptions.
 
 ---
 
 ## The guides
 
-- **[Content guide](CONTENT-GUIDE.md)** is how to fill in your photographs,
-  captions, narratives, sources, and the optional layers, one field at a time.
-- **[Admin setup](ADMIN-SETUP.md)** covers the web editor and how to publish your
-  map online.
-- **[Settings file](js/config.js)** is the single file that holds your map's
-  title, where it opens, and which features are on. Look for the "EDIT ME" notes.
+- **[Content guide](CONTENT-GUIDE.md)** walks through every field, one at a time,
+  in plain language, with examples to copy.
+- **[Admin setup](ADMIN-SETUP.md)** covers the editor and how to publish, whether
+  you create a map through MIRL or host your own.
+
+The map's title, opening words, citation details, and which optional features are
+on are all set from the **Map details** form in your dashboard, not from any code
+file.
 
 If you get stuck, the MIRL team is glad to help.
 
@@ -142,11 +142,17 @@ If you get stuck, the MIRL team is glad to help.
 ## About
 
 MIRL Map is made and maintained by the
-**[Material / Image Research Lab (MIRL)](https://mirl.arthistory.ucsb.edu)** at
-the University of California, Santa Barbara. It grew out of a documentary map of
-the village of Lifta and was generalized so that anyone can tell the story of a
-place. The map itself is drawn using OpenStreetMap and Esri imagery, and the code is
-openly commented for anyone who would like to look under the hood.
+**[Material / Image Research Lab (MIRL)](https://mirl.arthistory.ucsb.edu)** at the
+University of California, Santa Barbara. It grew out of a documentary map of the
+village of Lifta and was generalized so that any researcher, teacher, or community
+could use the same method. The map is drawn with OpenStreetMap and Esri imagery,
+and the code is openly commented for anyone who wants to look under the hood.
+
+It shares the visual identity of the other MIRL tools: paper and ink, with one of
+the four colours of the MIRL mark as its key (for the map, teal). Its typefaces
+are Familjen Grotesk, Epilogue, IBM Plex Mono, and Noto Naskh Arabic, and they
+are stored with the map itself, so a visitor's browser never fetches a font from
+an outside service.
 
 ---
 
@@ -156,10 +162,11 @@ The MIRL Map platform, meaning its code, styles, templates, and documentation, i
 released under the MIT License. You are free to use it, fork it, and adapt it for
 your own projects. The full text is in [LICENSE](LICENSE).
 
-The license covers the platform, not what you put into it. Your photographs and your
-writing stay entirely yours, to license however you wish. The sample photographs in
-this template remain the copyright of Jeff O'Brien and are included only as
-placeholder demo content, meant to be replaced with your own.
+The license covers the platform, not what you put into it. Your photographs and
+your writing stay entirely yours. The photographs in the live example are by Jeff
+O'Brien and are shown by permission.
 
 MIRL Map bundles one third-party component, leaflet-side-by-side (MIT), by Digital
-Democracy.
+Democracy, and four typefaces under the SIL Open Font License: Familjen Grotesk,
+Epilogue, IBM Plex Mono, and Noto Naskh Arabic. Their license texts are in
+[fonts/](fonts/).

@@ -1,294 +1,109 @@
-/* ══════════════════════════════════════════════════════
-   Accessibility panel + body-class overrides
-   Applied via js/a11y.js — classes on <html>
-   ══════════════════════════════════════════════════════ */
+/* MIRL Map · the accessibility panel and the modes it sets.
+   js/a11y.js puts the classes on <html>: hc (high contrast), rm (reduce
+   motion); text size is set on the root font size. Colours come from the
+   tokens in css/style.css. */
 
-/* ── Panel button in header ──────────────────────────── */
-
-#btn-a11y {
-  background: #dde4ea;
-  color: #3c4b5c;
-  border: 1px solid #c2ccd6;
-  border-radius: 4px;
-  padding: 4px 9px;
-  font-size: .82rem;
-  font-weight: bold;
-  cursor: pointer;
-  letter-spacing: .02em;
-  transition: background .15s, color .15s;
-  line-height: 1;
-}
-#btn-a11y:hover  { background: #cdd7df; color: #1b2733; }
-#btn-a11y.active { background: #0f766e; color: #eef3f7; }
-
-/* ── Accessibility panel ─────────────────────────────── */
+/* ── The panel ────────────────────────────────────────── */
 
 #a11y-panel {
-  position: fixed;
-  top: 62px;
-  right: 16px;
-  width: 240px;
-  background: #f5f7f9;
-  border: 1px solid #c2ccd6;
-  border-radius: 6px;
-  z-index: 8500;
-  padding: 14px 16px 16px;
-  box-shadow: 0 4px 24px rgba(0,0,0,.18);
-  display: none;
+  position: fixed; top: calc(var(--head-h) + 10px); right: 16px; width: 260px;
+  z-index: 8500; padding: 16px 18px 16px; display: none;
 }
 #a11y-panel.open { display: block; }
+#a11y-panel h3 { margin-bottom: 14px; }
 
-#a11y-panel h3 {
-  font-size: .65rem;
-  letter-spacing: .1em;
-  color: #5e6f82;
-  text-transform: uppercase;
-  margin-bottom: 14px;
-}
+.a11y-section { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.a11y-section:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+.a11y-label { display: block; font-size: .84rem; font-weight: 500; color: var(--ink-2); margin-bottom: 8px; }
 
-.a11y-section {
-  margin-bottom: 14px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid #cdd7df;
-}
-.a11y-section:last-child {
-  margin-bottom: 0;
-  padding-bottom: 0;
-  border-bottom: none;
-}
-
-.a11y-label {
-  font-size: .72rem;
-  color: #46566a;
-  margin-bottom: 8px;
-  display: block;
-}
-
-/* Font size buttons */
+/* Text size: four steps, each a larger A */
 .fs-btns {
-  display: flex;
-  gap: 6px;
-  align-items: flex-end;
+  display: flex; align-items: stretch; overflow: hidden;
+  border: 1px solid var(--line-2); border-radius: var(--radius); background: var(--surface);
 }
-
 .fs-btn {
-  background: #dde4ea;
-  border: 1px solid #c2ccd6;
-  border-radius: 3px;
-  color: #3c4b5c;
-  cursor: pointer;
-  padding: 4px 0;
-  flex: 1;
+  flex: 1; display: flex; align-items: flex-end; justify-content: center; padding: 6px 0 5px;
+  font-family: var(--display); font-weight: 600; line-height: 1; color: var(--ink-2);
+  background: transparent; border: 0; border-right: 1px solid var(--line); cursor: pointer;
   transition: background .12s, color .12s;
-  line-height: 1;
-  font-family: var(--font-display);
 }
-.fs-btn:hover  { background: #cdd7df; color: #1b2733; }
-.fs-btn.active { background: #0f766e; border-color: #0c5d56; color: #eef3f7; }
+.fs-btn:last-child { border-right: 0; }
+.fs-btn:hover { background: var(--soft); color: var(--ink); }
+.fs-btn.active { background: var(--key-wash); color: var(--key-ink); }
+#fs-btn-small  { font-size: .72rem; }
+#fs-btn-normal { font-size: .88rem; }
+#fs-btn-large  { font-size: 1.04rem; }
+#fs-btn-xlarge { font-size: 1.2rem; }
 
-/* Each step gets a progressively larger A */
-#fs-btn-small  { font-size: .7rem;  }
-#fs-btn-normal { font-size: .85rem; }
-#fs-btn-large  { font-size: 1rem;   }
-#fs-btn-xlarge { font-size: 1.15rem;}
-
-/* Toggle rows */
+/* Switches */
 .a11y-toggle-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  padding: 3px 0;
-  user-select: none;
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer; padding: 3px 0; user-select: none;
 }
-.a11y-toggle-row:hover .a11y-toggle-lbl { color: #1b2733; }
-
-.a11y-toggle-lbl {
-  font-size: .8rem;
-  color: #2c3a49;
-  line-height: 1.4;
-}
-
-/* Toggle switch */
+.a11y-toggle-row:hover .a11y-toggle-lbl { color: var(--ink); }
+.a11y-toggle-lbl { font-size: .9rem; color: var(--ink-2); line-height: 1.4; }
 .a11y-toggle {
-  width: 32px;
-  height: 18px;
-  border-radius: 9px;
-  background: #cdd7df;
-  border: 1px solid #c2ccd6;
-  position: relative;
-  flex-shrink: 0;
-  transition: background .18s;
-  cursor: pointer;
+  position: relative; flex-shrink: 0; width: 34px; height: 20px; cursor: pointer;
+  background: var(--soft); border: 1px solid var(--line-2); border-radius: 10px;
+  transition: background .18s, border-color .18s;
 }
 .a11y-toggle::after {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #4a5a6a;
-  transition: left .18s, background .18s;
+  content: ''; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px;
+  border-radius: 50%; background: var(--ink-3); transition: left .18s, background .18s;
 }
-.a11y-toggle.on {
-  background: #0f766e;
-  border-color: #0c5d56;
-}
-.a11y-toggle.on::after {
-  left: 16px;
-  background: #eef3f7;
-}
+.a11y-toggle.on { background: var(--key-ink); border-color: var(--key-ink); }
+.a11y-toggle.on::after { left: 16px; background: var(--surface); }
 
-.a11y-hint {
-  font-size: .68rem;
-  color: #5e6f82;
-  margin-top: 10px;
-  line-height: 1.5;
-}
+.a11y-hint { font-size: .78rem; color: var(--ink-3); margin-top: 12px; line-height: 1.5; }
 
-/* ── Focus indicators (always enhanced) ──────────────── */
+/* ── Focus: always visible, always the same ring ──────── */
 
 *:focus-visible {
-  outline: 2px solid #0f766e !important;
+  outline: 2px solid var(--key-ink) !important;
   outline-offset: 2px !important;
-  border-radius: 2px;
 }
 
-/* ══════════════════════════════════════════════════════
-   HIGH CONTRAST MODE  —  html.hc
-   On a light theme: pushes text to pure black, borders
-   bolder, accents stronger. Improves readability for
-   low-vision users without flipping to dark mode.
-   ══════════════════════════════════════════════════════ */
+/* ══ High contrast: html.hc ══════════════════════════════
+   Stays light. Text goes to black, rules go dark and heavier,
+   the key deepens; everything follows from the tokens. */
 
-html.hc body                { background: #eef2f6; color: #000; }
-html.hc #header             { background: #cdd7df; border-bottom: 2px solid #3a4a5a; }
-html.hc #header h1          { color: #000; }
-html.hc .sub                { color: #161e27; }
-html.hc .layer-btn          { background: #dde4ea; color: #000; border-color: #3a4a5a; }
-html.hc .layer-btn:hover    { background: #cdd7df; }
-html.hc .layer-btn.active   { background: #1f2a36; color: #ffffff; border-color: #0d141b; }
-html.hc .h-div              { background: #3a4a5a; }
+html.hc {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --mat: #ebe5d5;
+  --soft: #f1ecdf;
+  --ink: #000000;
+  --ink-2: #1d1b18;
+  --ink-3: #36322b;
+  --line: #6b665c;
+  --line-2: #1d1b18;
+  --key-ink: #054a43;
+  --key-deep: #03342f;
+  --key-wash: #cdeee8;
+  --scrim: rgba(0, 0, 0, .65);
+}
+html.hc #header { border-bottom-width: 2px; }
+html.hc #layer-panel, html.hc #help-panel, html.hc #a11y-panel, html.hc #search-panel,
+html.hc #timeline-panel, html.hc #stats-panel, html.hc #sources-panel, html.hc #about-panel,
+html.hc #compare-panel, html.hc #cite-card, html.hc #empty-state .es-card,
+html.hc .leaflet-popup-content-wrapper, html.hc .cite-row, html.hc #photo-count { border-width: 2px; }
+html.hc #info-drawer { border-left-width: 2px; }
+html.hc #info-drawer-caption, html.hc .g-caption, html.hc .intro-tip, html.hc .oh-excerpt { border-left-color: var(--ink); border-left-width: 4px; }
+html.hc .layer-btn { color: var(--ink); }
+html.hc .layer-btn.active, html.hc #btn-help.active, html.hc #btn-a11y.active, html.hc #btn-fs.active,
+html.hc .fs-btn.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+html.hc .cite a, html.hc .narrative-sources a, html.hc .src-lbl a,
+html.hc .g-source-link, html.hc #scrolly-open { text-decoration: underline; text-underline-offset: 2px; }
+html.hc .active-halo { stroke: var(--ink) !important; }
+html.hc .marker-inner { box-shadow: 0 0 0 1px var(--ink), 0 2px 8px rgba(0, 0, 0, .6); }
+html.hc .sr-snippet mark, html.hc .sr-caption mark, html.hc .sr-title mark { background: #ffe14d; box-shadow: none; }
+html.hc #header .view.on { border-bottom-color: var(--ink); }
 
-html.hc .leaflet-popup-content-wrapper { background: #ffffff; border: 2px solid #161e27; }
-html.hc .leaflet-popup-tip             { background: #ffffff; }
-html.hc .popup-caption                 { color: #000; border-bottom-color: #3a4a5a; }
-html.hc .popup-coords                  { color: #161e27; border-bottom-color: #3a4a5a; }
-html.hc .popup-btn-full                { background: #cdd7df; color: #000; }
-html.hc .popup-btn-info                { background: #1f2a36; color: #ffffff; }
+/* ══ Reduce motion: html.rm ══════════════════════════════ */
 
-html.hc #layer-panel,
-html.hc #about-panel,
-html.hc #info-drawer        { background: #ffffff; border: 2px solid #161e27; }
-html.hc #layer-panel h3     { color: #161e27; }
-html.hc .lp-lbl             { color: #000; }
-html.hc .chk                { background: #ffffff; border: 2px solid #3a4a5a; }
-html.hc .chk.on             { background: #1f2a36; border-color: #0d141b; }
-html.hc .lp-sep             { background: #3a4a5a; }
-html.hc .lp-leg-txt         { color: #11181f; }
-
-html.hc #about-panel h2     { color: #000; }
-html.hc #about-panel p      { color: #11181f; }
-html.hc .stat-lbl           { color: #161e27; }
-html.hc .stat-val           { color: #000; }
-
-html.hc #info-drawer-meta    { color: #161e27; }
-html.hc #info-drawer-caption { color: #000; border-left-color: #1f2a36; border-left-width: 4px; }
-html.hc #info-drawer-context { color: #000; }
-html.hc #info-drawer-source  { color: #161e27; border-top-color: #3a4a5a; }
-
-/* Citation superscripts in high-contrast mode */
-html.hc .cite a              { color: #0d141b; border-bottom-color: #1f2a36; }
-html.hc .cite a:hover        { color: #000; border-bottom-color: #0d141b; }
-
-/* Active-photo halo: darker stroke for visibility */
-html.hc .active-halo         { stroke: #0d141b !important; }
-
-/* Citation modal in high-contrast mode */
-html.hc #cite-modal          { background: rgba(0,0,0,.6); }
-html.hc #cite-card           { background: #ffffff; border: 2px solid #161e27; }
-html.hc #cite-title          { color: #000; }
-html.hc #cite-subtitle       { color: #11181f; }
-html.hc .cite-row            { background: #eef2f6; border: 2px solid #3a4a5a; }
-html.hc .cite-style          { color: #161e27; }
-html.hc .cite-copy           { background: #dde4ea; color: #000; border-color: #3a4a5a; }
-html.hc .cite-text           { color: #000; }
-html.hc .cite-button         { background: #eef2f6; color: #0d141b; border: 2px solid #161e27; }
-html.hc .cite-button:hover   { background: #dde4ea; color: #000; }
-
-/* Reduced-motion: skip the pulse animation */
-html.rm .active-halo.halo-pulsing { animation: none !important; }
-html.hc #info-drawer-nav     { background: #ffffff; border-top-color: #161e27; }
-html.hc .idn-btn             { background: #dde4ea; color: #000; border-color: #3a4a5a; }
-html.hc .idn-btn:hover       { background: #cdd7df; }
-html.hc #idn-counter         { color: #11181f; }
-
-html.hc #photo-count        { background: #ffffff; border-color: #161e27; color: #000; }
-
-html.hc #intro-screen       { background: #eef2f6; }
-html.hc .intro-card         { background: #ffffff; border: 2px solid #161e27; }
-html.hc .intro-title-ar,
-html.hc .intro-title-en     { color: #000; }
-html.hc .intro-subtitle     { color: #11181f; }
-html.hc .intro-para         { color: #000; }
-html.hc .intro-stats        { background: #eef2f6; border: 2px solid #161e27; }
-html.hc .intro-stat .is-lbl { color: #11181f; }
-html.hc .intro-stat .is-val { color: #000; }
-html.hc .intro-tip          { background: #eef2f6; border-left: 4px solid #1f2a36; color: #000; }
-html.hc .intro-tip kbd      { background: #ffffff; border: 1px solid #161e27; color: #000; }
-html.hc .intro-btn-primary  { background: #1f2a36; color: #ffffff; }
-html.hc .intro-btn-primary:hover { background: #0d141b; }
-html.hc .intro-btn-secondary { background: #dde4ea; color: #000; border: 2px solid #161e27; }
-html.hc .intro-credit       { color: #11181f; border-top-color: #3a4a5a; }
-
-
-html.hc #search-panel       { background: #ffffff; border: 2px solid #161e27; }
-html.hc #search-input       { background: #ffffff; border: 2px solid #161e27; color: #000; }
-html.hc #search-status      { color: #11181f; border-bottom-color: #3a4a5a; }
-html.hc .sr-item            { border-bottom-color: #3a4a5a; }
-html.hc .sr-item:hover,
-html.hc .sr-item.active     { background: #eef2f6; }
-html.hc .sr-title           { color: #161e27; }
-html.hc .sr-caption         { color: #000; }
-html.hc .sr-snippet         { color: #11181f; }
-html.hc .sr-caption mark,
-html.hc .sr-title mark,
-html.hc .sr-snippet mark    { background: #ffeb3b; color: #000; }
-
-html.hc .marker-inner       { border-color: #ffffff; box-shadow: 0 2px 8px rgba(0,0,0,.65); }
-
-/* Gallery — high contrast */
-html.hc #gallery-intro h2   { color: #000; }
-html.hc #gallery-intro p    { color: #11181f; }
-html.hc #gallery-intro      { border-bottom-color: #3a4a5a; }
-html.hc .g-entry            { border-bottom-color: #3a4a5a; }
-html.hc .g-caption          { color: #000; background: #ffffff; border-left-color: #1f2a36; border-left-width: 4px; }
-html.hc .g-coords           { color: #161e27; }
-html.hc .g-context          { color: #000; }
-html.hc .g-sources          { border-top-color: #3a4a5a; }
-html.hc .g-source-link      { color: #1f2a36; text-decoration: underline; }
-html.hc .g-source-link:hover{ color: #0d141b; }
-
-/* Accessibility panel — high contrast */
-html.hc #a11y-panel         { background: #ffffff; border: 2px solid #161e27; }
-html.hc #a11y-panel h3      { color: #161e27; }
-html.hc .a11y-label         { color: #11181f; }
-html.hc .a11y-toggle-lbl    { color: #000; }
-html.hc .a11y-section       { border-bottom-color: #3a4a5a; }
-html.hc .fs-btn             { background: #dde4ea; color: #000; border-color: #3a4a5a; }
-html.hc .fs-btn.active      { background: #1f2a36; color: #ffffff; }
-
-/* ══════════════════════════════════════════════════════
-   REDUCE MOTION MODE  —  html.rm
-   ══════════════════════════════════════════════════════ */
-
-html.rm *,
-html.rm *::before,
-html.rm *::after {
+html.rm *, html.rm *::before, html.rm *::after {
   transition: none !important;
-  animation:  none !important;
+  animation: none !important;
 }
-
 html.rm #info-drawer { transition: none !important; }
+html.rm .active-halo.halo-pulsing { animation: none !important; }

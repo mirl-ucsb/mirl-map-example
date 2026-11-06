@@ -1,4 +1,15 @@
-# Simple workflow for deploying static content to GitHub Pages
+# Builds the editable content and deploys the site to GitHub Pages in one run.
+#
+# Why build here (and not only in build-content.yml): a deploy must reflect the
+# LATEST edit. If the content build committed its generated files separately, the
+# Pages deploy would not see them, because GitHub does not trigger a workflow from
+# a GITHUB_TOKEN (bot) commit. So every edit would publish one step behind. By
+# compiling content/photos/*.md and content/settings.yml right here, just before
+# uploading, the deploy always publishes the current state.
+#
+# It also commits the regenerated files back to the repo (best effort) so the repo
+# stays a complete, self-contained static site for anyone serving it directly. That
+# bot commit does not re-trigger this workflow, so there is no loop.
 name: Deploy static content to Pages
 
 on:
@@ -9,20 +20,20 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+# Allow deploying to Pages, and writing the regenerated files back to the repo.
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+# Allow only one concurrent deployment, skipping runs queued between the run
+# in-progress and latest queued. Do NOT cancel in-progress runs, so production
+# deployments complete.
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
   deploy:
     environment:
       name: github-pages
@@ -31,13 +42,46 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install build dependencies
+        run: pip install Pillow PyYAML
+
+      - name: Build content (photos.js, settings.js, narratives, image tiers)
+        run: python3 scripts/build_content.py
+
+      - name: Commit regenerated files back to the repo (best effort)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Stage each generated path independently and tolerate any that are
+          # absent (a map with no photographs yet has no photos/web or photos/thumb),
+          # so a missing folder can never abort the deploy below.
+          for p in js/data/photos.js js/data/settings.js narratives photos/web photos/thumb; do
+            git add "$p" 2>/dev/null || true
+          done
+          if git diff --cached --quiet; then
+            echo "No generated changes to commit."
+          else
+            git commit -m "Build content (auto): regenerate photos.js, settings.js, narratives, and image tiers"
+            # The live deploy below uses the freshly built files regardless, so a
+            # failed push (e.g. a race with a newer edit) must not fail the deploy.
+            git push || echo "Push skipped; the deploy still publishes the fresh build."
+          fi
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
+          # Upload entire repository (now including the freshly built files)
           path: '.'
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5

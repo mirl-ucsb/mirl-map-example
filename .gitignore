@@ -11,3 +11,6 @@ __pycache__/
 
 # Local editor / tool state
 .claude/
+
+# Local chat handoff notes, not part of the published tool
+chat-handoff-*.md

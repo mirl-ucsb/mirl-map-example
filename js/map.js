@@ -13,7 +13,20 @@ document.addEventListener('keydown',function(e){
   }
 });
 
-const SC = {extant:'#4CAF50',ruins:'#FF9800',destroyed:'#F44336',occupied:'#2196F3'};
+/* Colours come from the tokens in css/style.css, so the palette lives in one
+   place. Leaflet writes SVG attributes, which cannot take var(), so the values
+   are read once here. The fallbacks match the stylesheet. */
+function tok(name, fallback){
+  try { var v = getComputedStyle(document.documentElement).getPropertyValue(name).trim(); return v || fallback; }
+  catch (e) { return fallback; }
+}
+var INK = {
+  key:    tok('--key', '#2ec4b6'),      // the map's teal: sightlines, the open photograph's ring
+  keyInk: tok('--key-ink', '#0b6b62'),  // the key as a line
+  ink:    tok('--ink', '#1d1b18'),
+  paper:  tok('--bg', '#fefaf0')
+};
+const SC = {extant:tok('--ok','#2b6e47'),ruins:tok('--warn','#8a5a0a'),destroyed:tok('--loss','#a3172f'),occupied:tok('--surv','#1b4b97')};
 const SL = {extant:'Still standing',ruins:'Ruins',destroyed:'Destroyed',occupied:'Occupied by others'};
 
 const map = L.map('map',{zoomControl:true, minZoom:(CONFIG.map.minZoom||0)}).setView(CONFIG.map.center, CONFIG.map.zoom);
@@ -34,6 +47,7 @@ function _mkTile(spec, url){
   if (spec.maxNativeZoom) opts.maxNativeZoom = spec.maxNativeZoom;
   if (spec.minZoom)       opts.minZoom       = spec.minZoom;
   if (spec.bounds)        opts.bounds        = spec.bounds;
+  if (spec.tone)          opts.className     = 'tone-' + spec.tone;   // e.g. tone:"paper" (css/style.css)
   return L.tileLayer(url, opts);
 }
 function _registerLayers(list, idSink){
@@ -55,10 +69,12 @@ _registerLayers(CONFIG.historicalLayers, _histIds);
 var curBase = CONFIG.map.defaultBase || _baseIds[0];
 applyLayer();   // add the default base layer (applyLayer is hoisted below)
 
-/* Low-density base layer for the locator inset: prefer topo/osm, else default. */
+/* Low-density base layer for the locator inset: a toned street map when there
+   is one (it matches the page), else topo/osm, else the default. */
 function _pickMiniSpec(){
   var byId = {}; (CONFIG.baseLayers||[]).forEach(function(s){ byId[s.id]=s; });
-  var pref = byId['topo'] || byId['osm'] || byId[CONFIG.map.defaultBase] || CONFIG.baseLayers[0];
+  var toned = (CONFIG.baseLayers||[]).filter(function(s){ return s.tone && !s.langVariants; })[0];
+  var pref = toned || byId['topo'] || byId['osm'] || byId[CONFIG.map.defaultBase] || CONFIG.baseLayers[0];
   if (pref && pref.langVariants){
     pref = (CONFIG.baseLayers||[]).filter(function(s){ return !s.langVariants; })[0] || pref;
   }
@@ -89,8 +105,8 @@ if (CONFIG.miniMap && CONFIG.miniMap.enabled && typeof L.Control.MiniMap === 'fu
     zoomLevelOffset: (typeof CONFIG.miniMap.zoomOffset === 'number' ? CONFIG.miniMap.zoomOffset : -5),
     toggleDisplay: true,
     minimized: false,
-    aimingRectOptions:    { color: '#0f766e', weight: 2, opacity: 0.85 },
-    shadowRectOptions:    { color: '#0f766e', weight: 1, opacity: 0.4, fillOpacity: 0.15 }
+    aimingRectOptions:    { color: INK.keyInk, weight: 2, opacity: 0.9, fillColor: INK.key, fillOpacity: 0.12 },
+    shadowRectOptions:    { color: INK.ink, weight: 1, opacity: 0.4, fillOpacity: 0.08 }
   }).addTo(map);
 }
 
@@ -318,11 +334,11 @@ function _wedgeCoordsFor(p) {
 
 // Single reusable polygon — repositioned as the active photo changes.
 var activeViewshed = L.polygon([], {
-  color:       '#d97706',
-  weight:      1.1,
-  opacity:     0.75,
-  fillColor:   '#f59e0b',
-  fillOpacity: 0.22,
+  color:       INK.keyInk,
+  weight:      1.2,
+  opacity:     0.85,
+  fillColor:   INK.key,
+  fillOpacity: 0.3,
   interactive: false,
   pane:        'overlayPane'
 });
@@ -346,10 +362,10 @@ function hideActiveViewshed() {
    at without opening anything. Brighter than the all-at-once
    overview, lighter than the active (open-photo) wedge. */
 var hoverViewshed = L.polygon([], {
-  color:       '#d97706',
+  color:       INK.keyInk,
   weight:      1.0,
   opacity:     0.7,
-  fillColor:   '#f59e0b',
+  fillColor:   INK.key,
   fillOpacity: 0.26,
   interactive: false,
   pane:        'overlayPane'
@@ -377,11 +393,11 @@ var allViewsheds = L.layerGroup(
     if (!coords) return null;
     return L.polygon(coords, {
       stroke:      true,
-      color:       '#d97706',
+      color:       INK.keyInk,
       weight:      0.4,
       opacity:     0.3,
-      fillColor:   '#f59e0b',
-      fillOpacity: 0.10,
+      fillColor:   INK.key,
+      fillOpacity: 0.12,
       interactive: false,
       pane:        'overlayPane'
     });
@@ -535,7 +551,36 @@ var CITE_BIBTEX_AUTHOR = CONFIG.site.author;
 var CITE_PROJECT       = CONFIG.citation.project;
 var CITE_PROJECT_PLAIN = CONFIG.citation.projectPlain;
 var CITE_BASE_URL      = CONFIG.site.baseUrl;
+/* If the public address was never filled in (a map whose config was not stamped
+   with its repository), fall back to the address this page is served from, so
+   citation permalinks point at the live map rather than a placeholder. */
+if (/YOUR-USER/i.test(CITE_BASE_URL) || !CITE_BASE_URL) {
+  CITE_BASE_URL = location.href.replace(/[?#].*$/, '').replace(/[^/]*$/, '');
+}
 var CITE_PLACE         = CONFIG.citation.placeLabel || "";
+
+/* The "Map details" form (content/settings.yml, surfaced as SITE) overrides the
+   citation identity, so a non-technical editor gets correct citations without
+   touching js/config.js. From a single author name we derive the "Last, First"
+   (MLA/Chicago) and "Last, F." (APA) forms; the map's title becomes the cited
+   project name; place is appended to each citation. */
+function _nameForms(name) {
+  var parts = String(name || '').trim().split(/\s+/);
+  if (parts.length < 2) return { lastFirst: name, apa: name };
+  var last = parts[parts.length - 1], firsts = parts.slice(0, -1);
+  var initials = firsts.map(function (w) { return w.charAt(0).toUpperCase() + '.'; }).join(' ');
+  return { lastFirst: last + ', ' + firsts.join(' '), apa: last + ', ' + initials };
+}
+if (typeof SITE !== 'undefined' && SITE) {
+  if (SITE.author) {
+    CITE_AUTHOR = CITE_BIBTEX_AUTHOR = SITE.author;
+    var _nf = _nameForms(SITE.author);
+    CITE_AUTHOR_LASTF = _nf.lastFirst;
+    CITE_AUTHOR_APA   = _nf.apa;
+  }
+  if (SITE.title) { CITE_PROJECT = CITE_PROJECT_PLAIN = SITE.title; }
+  if (SITE.place) { CITE_PLACE = SITE.place; }
+}
 
 function _photoBase(file)   { return file.replace(/\.[^.]+$/, ''); }
 function _photoUrl(file)    { return CITE_BASE_URL + '?photo=' + _photoBase(file); }
@@ -568,18 +613,20 @@ function buildCitations(idx) {
   var today = _todayISO();
 
   var _place = CITE_PLACE ? (', ' + CITE_PLACE) : '';
+  var _rights = (p.rights || '').trim();
+  var _rightsNote = _rights ? ' ' + _rights + '.' : '';
 
   // Chicago — author-date / notes-bibliography blended for a photograph
   var chicago = CITE_AUTHOR + ', "' + caption + ',” photograph, ' + date.chicago +
-                _place + ', in ' + CITE_PROJECT + ', accessed ' + today + ', ' + url + '.';
+                _place + ', in ' + CITE_PROJECT + ', accessed ' + today + ', ' + url + '.' + _rightsNote;
 
   // MLA 9th edition
   var mla = CITE_AUTHOR_LASTF + '. "' + caption + '." Photograph, ' + date.full + _place + '. ' +
-            CITE_PROJECT + ', ' + url + '. Accessed ' + today + '.';
+            CITE_PROJECT + ', ' + url + '. Accessed ' + today + '.' + _rightsNote;
 
   // APA 7th
   var apa = CITE_AUTHOR_APA + ' (' + date.year + '). ' + captionShort +
-            ' [Photograph]. ' + CITE_PROJECT + '. ' + url;
+            ' [Photograph]. ' + CITE_PROJECT + '. ' + url + _rightsNote;
 
   // BibTeX
   var bibtex =
@@ -588,7 +635,7 @@ function buildCitations(idx) {
     '  title        = {' + captionShort.replace(/&/g, '\\&') + '},\n' +
     '  year         = {' + date.year + '},\n' +
     (date.month ? '  month        = ' + date.month + ',\n' : '') +
-    '  note         = {Photograph' + _place + '. File ' + fileId + '.},\n' +
+    '  note         = {Photograph' + _place + '. File ' + fileId + '.' + (_rights ? ' ' + _rights + '.' : '') + '},\n' +
     '  howpublished = {\\url{' + url + '}}\n' +
     '}';
 
@@ -667,12 +714,12 @@ document.getElementById('cite-modal').addEventListener('click', function (e) {
 
 function buildSrcHTML(ids){
   if(!ids||!ids.length) return '';
-  var h='<div style="margin-top:8px;padding-top:8px;border-top:1px solid #cdd7df;">';
-  h+='<div style="font-size:.62rem;color:#2c3a49;letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px;">Sources</div>';
+  var h='<div class="src-block">';
+  h+='<div class="src-block-h">Sources</div>';
   ids.forEach(function(id){
     var s=srcLib[id]; if(!s) return;
-    if(s.url){ h+='<div style="margin-bottom:4px;"><a href="'+s.url+'" target="_blank" rel="noopener" style="font-size:.68rem;color:#0f766e;line-height:1.45;text-decoration:none;"><span style="margin-right:3px;opacity:.7;">&#8599;</span>'+s.label+'</a></div>'; }
-    else { h+='<div style="margin-bottom:4px;font-size:.68rem;color:#3c4b5c;line-height:1.45;">'+s.label+'</div>'; }
+    if(s.url){ h+='<div class="src-block-item"><a href="'+s.url+'" target="_blank" rel="noopener">'+s.label+' &#8599;</a></div>'; }
+    else { h+='<div class="src-block-item">'+s.label+'</div>'; }
   });
   return h+'</div>';
 }
@@ -686,7 +733,7 @@ var drawerIdx = -1;  // index of the photo currently shown in the drawer; -1 if 
    glance which marker on the map corresponds to the open photo. */
 var activeHalo = L.circleMarker([0, 0], {
   radius: 32,
-  color: '#0f766e',
+  color: INK.key,
   weight: 3,
   fillOpacity: 0,
   opacity: 0.9,
@@ -716,17 +763,24 @@ function hideActiveHalo() {
 function openPhotoDrawer(idx){
   var p=photoInfo[idx];
   drawerIdx=idx;
-  document.getElementById('info-drawer-meta').innerHTML='<strong style="color:#5e6f82;font-size:.72rem;">'+p.file+'</strong><br><span style="font-family:monospace;">'+fmtCoords(p.lat,p.lon)+'</span>';
+  document.getElementById('info-drawer-meta').innerHTML='<span class="dm-file">'+p.file+'</span><br><span>'+fmtCoords(p.lat,p.lon)+'</span>'+(p.rights?'<br><span class="dm-rights">'+escapeHtmlSafe(p.rights)+'</span>':'');
   var img=document.getElementById('info-drawer-img');
   img.src=CONFIG.images.web+photoInfo[idx].file; img.style.display='block';
-  document.getElementById('info-drawer-caption').textContent=p.caption;
+  var capEl=document.getElementById('info-drawer-caption');
+  capEl.textContent=p.caption;
+  if(p.caption_2){ var c2=document.createElement('div'); c2.className='caption-2'; c2.dir='auto'; c2.textContent=p.caption_2; capEl.appendChild(c2); }
   var ctxEl=document.getElementById('info-drawer-context');
-  ctxEl.innerHTML='<p style="color:#74859a;font-style:italic;">Loading…</p>';
-  loadNarrative(p.file).then(function(text){ ctxEl.innerHTML = renderNarrative(text) || '<p style="color:#74859a;font-style:italic;">No narrative yet.</p>'; });
-  document.getElementById('info-drawer-source').innerHTML=buildSrcHTML(p.source_ids);
+  ctxEl.innerHTML='<p class="drawer-note">Loading…</p>';
+  var srcEl=document.getElementById('info-drawer-source');
+  srcEl.innerHTML='';
+  loadNarrative(p.file).then(function(text){
+    if (drawerIdx !== idx) return;   // the visitor has moved to another photograph
+    ctxEl.innerHTML = renderNarrative(text) || '<p class="drawer-note">No narrative yet.</p>';
+    srcEl.innerHTML = buildSrcHTML(uncitedSourceIds(p.source_ids, text));   // what the narrative has not already listed
+  });
   // Citation export button
   var citeEl = document.getElementById('info-drawer-cite');
-  citeEl.innerHTML = '<button class="cite-button" type="button" onclick="openCiteModal(' + idx + ')">&#128221; Cite this photograph</button>';
+  citeEl.innerHTML = '<button class="cite-button" type="button" onclick="openCiteModal(' + idx + ')">Cite this photograph</button>';
   // Photo nav row
   document.getElementById('idn-counter').textContent=(idx+1)+' / '+photoInfo.length;
   document.getElementById('info-drawer-nav').style.display='flex';
@@ -802,7 +856,9 @@ var curIdx=0;
 function openLightbox(idx){
   curIdx=idx; var p=photoInfo[idx];
   document.getElementById('lightbox-img').src=CONFIG.images.full+photoInfo[idx].file;
-  document.getElementById('lightbox-caption-txt').textContent=p.caption;
+  var lbCap=document.getElementById('lightbox-caption-txt');
+  lbCap.textContent=p.caption;
+  if(p.caption_2){ var lc2=document.createElement('div'); lc2.className='caption-2'; lc2.dir='auto'; lc2.textContent=p.caption_2; lbCap.appendChild(lc2); }
   document.getElementById('lightbox-meta').textContent=p.file+'  \u00b7  '+fmtCoords(p.lat,p.lon)+'  \u00b7  '+(idx+1)+' of '+photoInfo.length;
   document.getElementById('lightbox').classList.add('open');
 }
@@ -859,7 +915,7 @@ var trailPoints = photoInfo
 var trailLatLngs = trailPoints.map(function (p) { return [p.lat, p.lon]; });
 
 var trailPolyline = L.polyline([], {
-  color:       '#0f766e',
+  color:       INK.keyInk,
   weight:      2.5,
   opacity:     0.85,
   dashArray:   '6 5',
@@ -1060,7 +1116,7 @@ if (typeof testimonies !== 'undefined' && Array.isArray(testimonies)) {
   testimonies.forEach(function (t) {
     var m = L.circleMarker([t.lat, t.lon], {
       radius: 9,
-      fillColor: '#2e7080',
+      fillColor: INK.keyInk,
       color: '#ffffff',
       weight: 2.5,
       fillOpacity: 0.92,
@@ -1188,7 +1244,7 @@ var mcg=L.markerClusterGroup({
   maxClusterRadius:48,spiderfyOnMaxZoom:true,showCoverageOnHover:false,zoomToBoundsOnClick:true,
   iconCreateFunction:function(cluster){
     var n=cluster.getChildCount();
-    return L.divIcon({html:'<div style="width:44px;height:44px;border-radius:4px;background:rgba(15,118,110,.92);border:2px solid rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.45);font-family:Inter,system-ui,sans-serif;font-size:.82rem;font-weight:600;color:#eef3f7;">'+n+'</div>',className:'',iconSize:[44,44],iconAnchor:[22,22]});
+    return L.divIcon({html:'<div class="cluster-tile">'+n+'</div>',className:'',iconSize:[44,44],iconAnchor:[22,22]});
   }
 });
 
@@ -1206,7 +1262,7 @@ photoInfo.forEach(function(p, idx){
   var mk = L.marker([p.lat, p.lon], {icon: ic});
   mk.bindPopup(
     '<img class="popup-img" src="' + CONFIG.images.web + p.file + '" data-idx="' + idx + '">' +
-    '<div class="popup-caption">' + p.caption + '</div>' +
+    '<div class="popup-caption">' + escapeHtmlSafe(p.caption || '') + '</div>' +
     '<div class="popup-coords">' + p.file + ' · ' + fmtCoords(p.lat, p.lon) + '</div>' +
     '<div class="popup-footer">' +
       '<button class="popup-btn popup-btn-full" data-idx="' + idx + '">Full size ↗</button>' +
@@ -1223,6 +1279,46 @@ photoInfo.forEach(function(p, idx){
 
 
 map.addLayer(mcg);
+
+/* Where the map opens. An explicit opening view from the "Map details" form wins;
+   otherwise fit the view to the photographs (with a zoom cap so a single photo does
+   not slam to max zoom); with no photographs and no set view, the initial
+   CONFIG.map.center / zoom stands. */
+var _startView = (typeof SITE !== 'undefined' && SITE) ? SITE : {};
+if (_startView.start_lat != null && _startView.start_lon != null) {
+  map.setView([_startView.start_lat, _startView.start_lon],
+              _startView.start_zoom != null ? _startView.start_zoom : map.getZoom());
+} else if (photoInfo.length) {
+  try {
+    map.fitBounds(L.latLngBounds(photoInfo.map(function (p) { return [p.lat, p.lon]; })),
+                  { padding: [40, 40], maxZoom: 15 });
+  } catch (e) {}
+}
+
+/* No photographs yet: show the "add your first photograph" card over the map,
+   and swap the intro splash's how-to-read tip (which teaches clicking photos,
+   the arrow keys, and Wander) for a start-here note, since none of that does
+   anything until the map has photographs. */
+if (!photoInfo.length) {
+  var _es = document.getElementById('empty-state');
+  if (_es) _es.style.display = 'flex';
+  var _tip = document.querySelector('#intro-screen [data-i18n-html="intro.tip"]');
+  if (_tip) {
+    _tip.innerHTML = 'No photographs yet. Open the <a href="admin/">dashboard</a> ' +
+                     'to add your first one, and it will appear here on the map.';
+    _tip._i18nHTML = _tip.innerHTML;   // keep it through any later i18n re-apply
+  }
+}
+
+/* Status-bar count: "N photograph(s)". The number is owned here, not the i18n
+   string, so it tracks the real photo count and pluralizes. */
+(function () {
+  var _pc = document.getElementById('photo-count-n');
+  if (_pc) {
+    var _n = photoInfo.length;
+    _pc.textContent = _n + (_n === 1 ? ' photograph' : ' photographs');
+  }
+})();
 
 /* ── Feature flags ─────────────────────────────────────────
    Hide any element tagged data-feature="X" whose CONFIG.features.X is false,
@@ -1439,8 +1535,7 @@ function runSearch() {
 // Wire up the input and clicks
 document.getElementById('search-input').addEventListener('input', runSearch);
 
-document.getElementById('search-results').addEventListener('click', function (e) {
-  var item = e.target.closest('.sr-item');
+function activateSearchResult(item) {
   if (!item) return;
   var idx = parseInt(item.getAttribute('data-result-idx'), 10);
   if (isNaN(idx)) return;
@@ -1448,6 +1543,16 @@ document.getElementById('search-results').addEventListener('click', function (e)
   // Pan to the photo (don't change zoom dramatically; keep current zoom but ensure ≥17)
   map.setView([p.lat, p.lon], Math.max(map.getZoom(), 17), { animate: !document.documentElement.classList.contains('rm') });
   openPhotoDrawer(idx);
+}
+document.getElementById('search-results').addEventListener('click', function (e) {
+  activateSearchResult(e.target.closest('.sr-item'));
+});
+document.getElementById('search-results').addEventListener('keydown', function (e) {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  var item = e.target.closest('.sr-item');
+  if (!item) return;
+  e.preventDefault();
+  activateSearchResult(item);
 });
 
 // Keyboard support inside the search input

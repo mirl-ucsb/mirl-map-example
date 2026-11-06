@@ -31,6 +31,7 @@ var siteI18N = {
   "nav.sources":     { en: "Sources" },
   "nav.compare":     { en: "Compare" },
   "nav.map":         { en: "Map" },
+  "nav.essay":       { en: "Essay" },
 
   /* Accessibility panel */
   "a11y.title":      { en: "Accessibility" },
@@ -49,7 +50,7 @@ var siteI18N = {
   "cmp.hint":        { en: "drag the handle &nbsp;&middot;&nbsp; pan/zoom shared" },
 
   /* Layers panel */
-  "lp.title":        { en: "Map Layers" },
+  "lp.title":        { en: "Map layers" },
   "lp.photos":       { en: "Photo markers" },
   "lp.landmarks":    { en: "Landmarks" },
   "lp.sightlines":   { en: "Sightlines (all photos)" },
@@ -75,7 +76,6 @@ var siteI18N = {
   /* Photo drawer */
   "drawer.prev":     { en: "← Prev" },
   "drawer.next":     { en: "Next →" },
-  "status.count":    { en: "photographs &nbsp;&middot;&nbsp; About &#9432;" },
   "cite.title":      { en: "Cite this photograph" },
 
   /* Intro splash */
@@ -86,6 +86,11 @@ var siteI18N = {
   "intro.enter":     { en: "Enter the map →" },
   "intro.essay":     { en: "View as photo essay" },
   "intro.credit":    { en: "EDIT ME — your credit line." },
+
+  /* Empty state (a map with no photographs yet) */
+  "empty.h":         { en: "No photographs yet" },
+  "empty.p":         { en: "This map is waiting for its first photograph." },
+  "empty.btn":       { en: "Add your first photograph →" },
 
   /* Gallery page */
   "g.sub":           { en: "Photographs" },

@@ -39,11 +39,12 @@ function _dir(l)      { return (_isSecond(l) && _SECOND.rtl) ? 'rtl' : 'ltr'; }
   document.documentElement.setAttribute('lang', siteLang);
   document.documentElement.setAttribute('dir', _dir(siteLang));
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function () { applySiteMeta(); buildLangButtons(); applyI18N(); syncLangButtons(); });
+    document.addEventListener('DOMContentLoaded', function () { applySiteMeta(); buildLangButtons(); applyI18N(); applySettings(); syncLangButtons(); });
   } else {
     applySiteMeta();
     buildLangButtons();
     applyI18N();
+    applySettings();
     syncLangButtons();
   }
 })();
@@ -53,11 +54,27 @@ function _dir(l)      { return (_isSecond(l) && _SECOND.rtl) ? 'rtl' : 'ltr'; }
    script shown beside it). Keeps js/config.js the single source of truth. */
 function applySiteMeta() {
   if (typeof CONFIG === 'undefined' || !CONFIG.site) return;
-  if (CONFIG.site.title) document.title = CONFIG.site.title;
-  document.querySelectorAll('[data-site-title]').forEach(function (el) { el.textContent = CONFIG.site.title; });
+  var title = (typeof SITE !== 'undefined' && SITE && SITE.title) ? SITE.title : CONFIG.site.title;
+  if (title) document.title = title;
+  document.querySelectorAll('[data-site-title]').forEach(function (el) { el.textContent = title; });
   document.querySelectorAll('[data-site-title-alt]').forEach(function (el) {
     el.textContent = CONFIG.site.titleAlt || '';
     if (!CONFIG.site.titleAlt) el.style.display = 'none';
+  });
+}
+
+/* Overlay the editable map identity from js/data/settings.js (SITE, compiled from
+   content/settings.yml) onto elements tagged data-settings="title|subtitle|intro|
+   about|credit". A field set in SITE replaces the element's text and becomes its
+   captured i18n English fallback; otherwise the page's HTML default stands. */
+function applySettings() {
+  if (typeof SITE === 'undefined' || !SITE) return;
+  document.querySelectorAll('[data-settings]').forEach(function (el) {
+    var v = SITE[el.getAttribute('data-settings')];
+    if (v != null && String(v).trim() !== '') {
+      el.textContent = v;
+      el._i18nText = v;
+    }
   });
 }
 

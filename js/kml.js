@@ -17,6 +17,9 @@
   // Project URL + attribution come from CONFIG so the KML stays self-describing
   // once exported (the permalinks remain valid even if the file is shared).
   var PROJECT_URL = (typeof CONFIG !== 'undefined' && CONFIG.site.baseUrl) || '';
+  if (!PROJECT_URL || /YOUR-USER/i.test(PROJECT_URL)) {
+    PROJECT_URL = location.href.replace(/[?#].*$/, '').replace(/[^/]*$/, '');
+  }
   var ATTRIBUTION = (typeof CONFIG !== 'undefined' && CONFIG.kml && CONFIG.kml.attribution) || '';
 
   function escapeXml(s) {
@@ -73,6 +76,7 @@
         var photoUrl  = PROJECT_URL + (CONFIG.images.full || 'photos/') + p.file;
         var caption   = p.caption || basename;
         var taken     = p.taken_at || '';
+        var rights    = p.rights || '';
         var bearing   = (typeof p.bearing === 'number') ? p.bearing : null;
 
         // Description: thumbnail + caption + permalink
@@ -81,6 +85,7 @@
         descParts.push('<p><img src="' + photoUrl + '" width="320" alt=""/></p>');
         descParts.push('<p><i>Taken ' + escapeXml(taken) + '</i>' +
           (bearing !== null ? ' &middot; bearing ' + Math.round(bearing) + '°' : '') + '</p>');
+        if (rights) descParts.push('<p>' + escapeXml(rights) + '</p>');
         descParts.push('<p><a href="' + permalink + '">View on the ' + escapeXml(CONFIG.site.title) + ' map</a></p>');
 
         lines.push('<Placemark>');

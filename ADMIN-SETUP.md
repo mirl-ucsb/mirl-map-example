@@ -15,22 +15,23 @@ This page covers two things:
 ## 1. Try the editor on your own computer (no setup, no accounts)
 
 You can run the editor against the copy of the project on your own computer, with
-no login. A nice way to get a feel for it.
+no login. A nice way to get a feel for it. Use a Chromium browser (Chrome or Edge)
+for this local mode.
 
 You will use **Terminal** (it comes with every Mac; on Windows it is **Command
-Prompt** or **PowerShell**). Open it, type these two lines (the second in a new
-window), and press Return after each:
+Prompt** or **PowerShell**). Open it, move into the project folder, and start a
+small web server:
 
-```
-npx decap-server
-```
 ```
 python3 -m http.server 8766
 ```
 
-Now open your browser at **http://localhost:8766/admin/**, click **Login** (no
-password is needed in this local mode), and edit. Your changes save to the copy on
-your computer. Nothing goes online until you publish.
+Now open your browser at **http://localhost:8766/admin/edit/**, click **Work with
+Local Repository**, and choose this project's folder when prompted. Edit away. Your
+changes save to the copy on your computer. Nothing goes online until you publish.
+
+(The friendly home screen is at **http://localhost:8766/admin/**: it shows your
+map's title, photo count, and a live preview, with buttons that open this editor.)
 
 ---
 
@@ -55,8 +56,11 @@ already set for you.
 In your project on GitHub: **Settings → Pages → Source: GitHub Actions.** Your map
 publishes at `https://your-user.github.io/your-repo/`.
 
-That is everything. Visit `https://your-user.github.io/your-repo/admin/`, click
-**Log in with GitHub**, authorize once, and you are editing.
+That is everything. Visit `https://your-user.github.io/your-repo/admin/`. That is
+your **dashboard**: it shows your map's title, how many photographs it has, a live
+preview, and buttons to add photographs or edit your map's details. Click one,
+authorize with GitHub once, and you are editing. Bookmark this page; it is your
+home for the map from now on.
 
 ---
 
@@ -71,10 +75,12 @@ People without access can still view the published map.
 
 ## How your editors use it
 
-1. Go to your map's address followed by `/admin` and click **Log in with GitHub**.
-2. Choose **Photographs → New Photograph.** Drag in the image, type a **caption**,
-   and (optionally) write the **narrative.** Leave the location and other technical
-   boxes empty; they are read from the photograph itself.
+1. Go to your map's address followed by `/admin` to open the **dashboard**, and
+   click **Add a photograph** (signing in with GitHub the first time).
+2. Drag in the image, type a **caption**, and (optionally) write the **narrative.**
+   Leave the location and other technical boxes empty; they are read from the
+   photograph itself. To rename the map or change its intro, use **Edit map
+   details** on the dashboard instead.
 3. Click **Publish.** Within about a minute, your change appears on the live map.
 
 ---
